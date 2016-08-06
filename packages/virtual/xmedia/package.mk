@@ -19,7 +19,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 # tools
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mc"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mc scan-s2"
 
 # camd
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET wicard oscam"
@@ -29,3 +29,7 @@ PKG_AUTORECONF="no"
 
 # games
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET retroarch emulationstation"
+
+# dvb drivers
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET media_build"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET tbs-crazycat"
