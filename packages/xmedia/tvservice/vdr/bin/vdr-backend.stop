@@ -1,0 +1,35 @@
+#!/bin/sh
+################################################################################
+#      This file is part of Alex@ELEC - http://www.alexelec.in.ua
+#      Copyright (C) 2011-2015 Alexandr Zuyev (alex@alexelec.in.ua)
+################################################################################
+
+. /etc/profile
+
+LOCK_DIR="/var/lock"
+SERVICE_DIR="/storage/.cache/services"
+
+[ ! -f "$LOCK_DIR/sleep.vdr-backend" ] && rm -f $LOCK_DIR/start.vdr-backend
+
+# wicard and oscam service stop
+camd_stop () {
+  if [ -f "$SERVICE_DIR/wicard.conf" ]; then
+    . $SERVICE_DIR/wicard.conf
+    if [ "$WICARD_TYPE" == "TVonly" ]; then
+      rm -f $LOCK_DIR/start.wicard
+      systemctl stop wicard.service
+    fi
+  fi
+
+  if [ -f "$SERVICE_DIR/oscam.conf" ]; then
+    . $SERVICE_DIR/oscam.conf
+    if [ "$OSCAM_TYPE" == "TVonly" ]; then
+      rm -f $LOCK_DIR/start.oscam
+      systemctl stop oscam.service
+    fi
+  fi
+}
+
+# VDR Backend service stop
+logger -t vdr "VDR Backend stop..."
+camd_stop

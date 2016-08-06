@@ -1,0 +1,16 @@
+[Unit]
+Description=Wicard Daemon
+Requires=wicard-switch.service
+After=wicard-switch.service network-online.target
+Before=vdr.service
+ConditionPathExists=/var/lock/start.wicard
+
+[Service]
+ExecStart=/bin/sh -c 'exec /usr/bin/wicard.start'
+TimeoutStopSec=1
+Restart=always
+RestartSec=2
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target

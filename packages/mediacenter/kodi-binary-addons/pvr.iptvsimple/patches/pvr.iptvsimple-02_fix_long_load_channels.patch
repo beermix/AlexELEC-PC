@@ -1,0 +1,61 @@
+diff -Naurp pvr.iptvsimple-e547e11/pvr.iptvsimple/addon.xml.in pvr.iptvsimple-e547e11-patch/pvr.iptvsimple/addon.xml.in
+--- pvr.iptvsimple-e547e11/pvr.iptvsimple/addon.xml.in	2016-06-18 17:01:02.000000000 +0300
++++ pvr.iptvsimple-e547e11-patch/pvr.iptvsimple/addon.xml.in	2016-06-18 16:16:20.000000000 +0300
+@@ -1,9 +1,9 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <addon
+   id="pvr.iptvsimple"
+-  version="2.12.13"
++  version="3.0.0"
+   name="PVR IPTV Simple Client"
+-  provider-name="nightik">
++  provider-name="nightik (AlexELEC)">
+   <requires>
+     <c-pluff version="0.1"/>
+     <import addon="xbmc.pvr" version="4.1.0"/>
+diff -Naurp pvr.iptvsimple-e547e11/pvr.iptvsimple/changelog.txt pvr.iptvsimple-e547e11-patch/pvr.iptvsimple/changelog.txt
+--- pvr.iptvsimple-e547e11/pvr.iptvsimple/changelog.txt	2016-06-18 17:01:02.000000000 +0300
++++ pvr.iptvsimple-e547e11-patch/pvr.iptvsimple/changelog.txt	2016-06-18 16:17:25.000000000 +0300
+@@ -1,5 +1,6 @@
+-v2.12.13
+-- For AlexELEC: add pause stream
++v3.0.0 (AlexELEC)
++- add pause stream
++- fix load channels
+ 
+ v1.12.13
+ - updated language files from Transifex
+diff -Naurp pvr.iptvsimple-e547e11/src/PVRIptvData.cpp pvr.iptvsimple-e547e11-patch/src/PVRIptvData.cpp
+--- pvr.iptvsimple-e547e11/src/PVRIptvData.cpp	2016-05-09 23:55:27.000000000 +0300
++++ pvr.iptvsimple-e547e11-patch/src/PVRIptvData.cpp	2016-06-18 16:13:12.000000000 +0300
+@@ -716,7 +716,6 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(
+       tag.iEpisodeNumber      = 0;     /* not supported */
+       tag.iEpisodePartNumber  = 0;     /* not supported */
+       tag.strEpisodeName      = NULL;  /* not supported */
+-      tag.iFlags              = EPG_TAG_FLAG_UNDEFINED;
+ 
+       PVR->TransferEpgEntry(handle, &tag);
+ 
+@@ -968,18 +967,14 @@ int PVRIptvData::GetCachedFileContents(c
+ 
+ void PVRIptvData::ApplyChannelsLogos()
+ {
++  if (m_strLogoPath.empty())
++    return;
++
+   std::vector<PVRIptvChannel>::iterator channel;
+   for(channel = m_channels.begin(); channel < m_channels.end(); ++channel)
+   {
+     if (!channel->strTvgLogo.empty())
+-    {
+-      if (!m_strLogoPath.empty() 
+-        // special proto
+-        && channel->strTvgLogo.find("://") == std::string::npos)
+-        channel->strLogoPath = PathCombine(m_strLogoPath, channel->strTvgLogo);
+-      else
+-        channel->strLogoPath = channel->strTvgLogo;
+-    }
++      channel->strLogoPath = PathCombine(m_strLogoPath, channel->strTvgLogo);
+   }
+ }
+ 

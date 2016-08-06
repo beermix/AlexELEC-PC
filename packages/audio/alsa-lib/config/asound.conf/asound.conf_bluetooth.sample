@@ -1,0 +1,14 @@
+# sample for bluetooth asound.conf
+
+# HDMI out (default)
+pcm.!default {
+    type hw
+    card 1
+    device 9
+}
+
+# Bluetooth out
+pcm.bluetooth {
+    type bluetooth
+    device "XX:XX:XX:XX:XX:XX"
+}

@@ -1,0 +1,29 @@
+#!/bin/sh
+################################################################################
+#      This file is part of Alex@ELEC - http://www.alexelec.in.ua
+#      Copyright (C) 2011-2016 Alexandr Zuyev (alex@alexelec.in.ua)
+################################################################################
+
+. /etc/profile
+
+# oscam config
+OSCAM_HOME="/storage/.config/oscam"
+
+mkdir -p $OSCAM_HOME/config
+mkdir -p $OSCAM_HOME/log
+mkdir -p $OSCAM_HOME/log/cw
+mkdir -p $OSCAM_HOME/log/emm
+
+touch $OSCAM_HOME/config/oscam.ac
+touch $OSCAM_HOME/config/oscam.cert
+touch $OSCAM_HOME/config/oscam.dvbapi
+touch $OSCAM_HOME/config/oscam.guess
+touch $OSCAM_HOME/config/oscam.ird
+touch $OSCAM_HOME/config/oscam.provid
+touch $OSCAM_HOME/config/oscam.server
+touch $OSCAM_HOME/config/oscam.services
+touch $OSCAM_HOME/config/oscam.srvid
+touch $OSCAM_HOME/config/oscam.tiers
+touch $OSCAM_HOME/config/oscam.user
+
+exec oscam -r 2 -u -c $OSCAM_HOME/config > /dev/null 2>&1

@@ -1,0 +1,7 @@
+# Audio output device: Nvidia HDMI
+
+pcm.!default {
+    type hw
+    card 1
+    device 9
+}

@@ -1,0 +1,151 @@
+#!/bin/sh
+################################################################################
+#      This file is part of Alex@ELEC - http://www.alexelec.in.ua
+#      Copyright (C) 2011-2016 Alexandr Zuyev (alex@alexelec.in.ua)
+################################################################################
+
+. /etc/profile
+[ -f /storage/.config/vdr/vdr-plugins.conf ] && . /storage/.config/vdr/vdr-plugins.conf
+
+LOCK_DIR="/var/lock"
+WICARD_DIR="/storage/.config/wicard"
+SERVICE_DIR="/storage/.cache/services"
+. $SERVICE_DIR/tvservice.conf
+
+[ -f "$SERVICE_DIR/vdr.conf" ] && . $SERVICE_DIR/vdr.conf
+[ -f "$SERVICE_DIR/softhd.conf" ] && . $SERVICE_DIR/softhd.conf
+[ -f "$SERVICE_DIR/remote.conf" ] && . $SERVICE_DIR/remote.conf
+[ -f "$SERVICE_DIR/locale.conf" ] && . $SERVICE_DIR/locale.conf
+
+# wicard and oscam services start
+camd_start() {
+  if [ -f "$SERVICE_DIR/wicard.conf" ]; then
+    . $SERVICE_DIR/wicard.conf
+    if [ "$WICARD_TYPE" == "TVonly" ]; then
+      touch $LOCK_DIR/start.wicard
+      systemctl start wicard.service
+    fi
+  fi
+
+  if [ -f "$SERVICE_DIR/oscam.conf" ]; then
+    . $SERVICE_DIR/oscam.conf
+    if [ "$OSCAM_TYPE" == "TVonly" ]; then
+      touch $LOCK_DIR/start.oscam
+      systemctl start oscam.service
+    fi
+  fi
+}
+
+# init VDR
+vdr_init() {
+
+  VDR_EPG_DIR="/storage/.config/vdr/epg"
+  mkdir -p $VDR_EPG_DIR
+  mkdir -p /storage/.cache/vdr
+
+  [ -z "$SYS_LOCALE" ] && SYS_LOCALE="ru_RU.UTF-8"
+
+  VDR_ARGS="--epgfile=$VDR_EPG_DIR"
+
+  if [ -d "$VDR_VIDEO_DIR" ]; then
+      VDR_ARGS="$VDR_ARGS --video=$VDR_VIDEO_DIR"
+  fi
+
+  DVB_DEV=""
+  if [ "$VDR_DVB_SEL" == "Custom" ]; then
+      if [ "$VDR_DVB_NUMBER1" != "none" ]; then
+          NUMDEV=$(echo $VDR_DVB_NUMBER1 | sed 's/-.*//')
+          DVB_DEV="$DVB_DEV -D $NUMDEV"
+
+          if [ "$VDR_DVB_NUMBER2" != "none" ]; then
+              NUMDEV=$(echo $VDR_DVB_NUMBER2 | sed 's/-.*//')
+              DVB_DEV="$DVB_DEV -D $NUMDEV"
+
+              if [ "$VDR_DVB_NUMBER3" != "none" ]; then
+                  NUMDEV=$(echo $VDR_DVB_NUMBER3 | sed 's/-.*//')
+                  DVB_DEV="$DVB_DEV -D $NUMDEV"
+              fi
+          fi
+      fi
+  fi
+
+  if [ "$REMOTE_PROG" != "hidmapper" ]; then
+      LIRC_VDR="--lirc=/run/lirc/lircd"
+  else
+      LIRC_VDR=""
+  fi
+
+  if [ "$VDR_DEBUG" == "1" ]; then
+      VDR_ARGS="$VDR_ARGS --log=3"
+  else
+      VDR_ARGS="$VDR_ARGS --log=1"
+  fi
+
+  # set video driver for softhddevice
+  if [ "$GPUTYPE" = "INTEL" ]; then
+      SOFTHD_VIDEO="va-api"
+  else
+      SOFTHD_VIDEO="vdpau"
+  fi
+
+  SOFTHD_ARGS=""
+  [ "$SOFTHD_NOHW" == "1" ] && SOFTHD_ARGS="$SOFTHD_ARGS -w no-hw-decoder"
+  [ "$SOFTHD_NOMPEG" == "1" ] && SOFTHD_ARGS="$SOFTHD_ARGS -w no-mpeg-hw-decoder"
+  [ "$SOFTHD_STILL" == "1" ] && SOFTHD_ARGS="$SOFTHD_ARGS -w still-hw-decoder"
+  [ "$SOFTHD_STILL264" == "1" ] && SOFTHD_ARGS="$SOFTHD_ARGS -w still-h264-hw-decoder"
+  [ "$SOFTHD_DEFECT" == "1" ] && SOFTHD_ARGS="$SOFTHD_ARGS -w use-possible-defect-frames"
+  
+  VDR_ARGS="$VDR_ARGS -P'softhddevice -v $SOFTHD_VIDEO $SOFTHD_ARGS'"
+
+  [ "$VDR_DVBAPI" == "1" ] && VDR_ARGS="$VDR_ARGS -P'dvbapi -d'"
+  [ "$VDR_IPTV" == "1" ] && VDR_ARGS="$VDR_ARGS -P iptv"
+  [ "$VDR_SATIP" == "1" ] && VDR_ARGS="$VDR_ARGS -P satip"
+  [ "$VDR_EPGSEARCH" == "1" ] && VDR_ARGS="$VDR_ARGS -P epgsearch"
+  [ "$VDR_STREAMDEV_SERVER" == "1" ] && VDR_ARGS="$VDR_ARGS -P streamdev-server"
+  [ "$VDR_STREAMDEV_CLIENT" == "1" ] && VDR_ARGS="$VDR_ARGS -P streamdev-client -P epgsync -P svdrpservice"
+  [ "$VDR_CHSCAN" == "1" ] && VDR_ARGS="$VDR_ARGS -P channelscan"
+  [ "$VDR_FEMON" == "1" ] && VDR_ARGS="$VDR_ARGS -P femon"
+  [ "$VDR_SYSINFO" == "1" ] && VDR_ARGS="$VDR_ARGS -P systeminfo"
+  [ "$VDR_SLEEP" == "1" ] && VDR_ARGS="$VDR_ARGS -P sleeptimer"
+  [ -z "$VDR_PVR" ] && VDR_PVR="none"
+  [ "$VDR_PVR" != "none" ] && VDR_ARGS="$VDR_ARGS -P $VDR_PVR"
+  [ "$VDR_LCDPROC" == "1" ] && VDR_ARGS="$VDR_ARGS -P lcdproc"
+  [ "$VDR_CEC" == "1" ] && VDR_ARGS="$VDR_ARGS -P cecremote"
+  [ "$VDR_BOBLIGHT" == "1" ] && VDR_ARGS="$VDR_ARGS -P boblight"
+  [ "$VDR_TVSCRAPER" == "1" ] && VDR_ARGS="$VDR_ARGS -P tvscraper"
+  [ "$VDR_SKIN_FLATPLUS" == "1" ] && VDR_ARGS="$VDR_ARGS -P skinflatplus"
+  [ "$VDR_SKIN_NOPACITY" == "1" ] && VDR_ARGS="$VDR_ARGS -P skinnopacity"
+  [ "$VDR_WEATHER" == "1" ] && VDR_ARGS="$VDR_ARGS -P weatherforecast"
+  [ "$VDR_PIN" == "1" ] && VDR_ARGS="$VDR_ARGS -P pin"
+  [ "$VDR_SKIN_DESIGNER" == "1" ] && VDR_ARGS="$VDR_ARGS -P skindesigner"
+  [ "$VDR_TVGUIDENG" == "1" -a "$VDR_SKIN_DESIGNER" == "1" ] && VDR_ARGS="$VDR_ARGS -P tvguideng"
+
+  [ -n "$VDR_PLUGINS" ] && VDR_ARGS="$VDR_ARGS $VDR_PLUGINS"
+
+  if [ "$VDR_LIVE" == "1" ]; then
+      mkdir -p /storage/.cache/vdr/epgimages
+      VDR_ARGS="$VDR_ARGS -P'live --ip=0.0.0.0 -e /storage/.cache/vdr/epgimages'"
+      if [ ! -e /storage/.config/vdr/plugins/live/live.pem ] || [ ! -e /storage/.config/vdr/plugins/live/live-key.pem ]; then
+          openssl req -new -x509 -nodes -days 9999 -batch -subj "/" -outform pem -out /storage/.config/vdr/plugins/live/live.pem -keyout /storage/.config/vdr/plugins/live/live-key.pem > /dev/null 2>&1
+      fi
+  fi
+
+}
+
+# VDR service start
+/usr/bin/hidmap vdr
+/usr/bin/lcdproc vdr
+vdr_init
+wait_for_dvb
+camd_start
+
+PRESHELL="/storage/.config/preshell.sh"
+if [ -f $PRESHELL ]; then
+  logger -t VDR '!!! PRESHELL script detected !!!'
+  cat "$PRESHELL" | logger -t VDR
+  logger -t VDR '!!! -End of preshell script- !!!'
+  sh $PRESHELL VDR
+fi
+
+logger -t vdr "VDR Frontend start: $DVB_DEV $LIRC_VDR $VDR_ARGS"
+eval LANG="$SYS_LOCALE" exec vdr $DVB_DEV $LIRC_VDR $VDR_ARGS > /dev/null 2>&1

@@ -1,0 +1,324 @@
+#!/bin/bash
+################################################################################
+#      This file is part of Alex@ELEC - http://www.alexelec.in.ua
+#      Copyright (C) 2011-2016 Alexandr Zuyev (alex@alexelec.in.ua)
+################################################################################
+
+. config/options $1
+
+show_config
+
+$SCRIPTS/checkdeps
+$SCRIPTS/build toolchain
+$SCRIPTS/build squashfs:host
+$SCRIPTS/build dosfstools:host
+$SCRIPTS/build fakeroot:host
+$SCRIPTS/build kmod:host
+$SCRIPTS/build mtools:host
+$SCRIPTS/build populatefs:host
+
+BUILD_DATE=`date +%Y%m%d`
+
+GIT_HASH=$(git rev-parse HEAD)
+
+# Get origin url, fix git:// and git@github.com: urls if necessary
+ORIGIN_URL="$(git remote -v | awk '$1 == "origin" { print $2 }' | head -1 | sed 's#\.git$##;s#^git:#https:#;s#^git@github\.com:#https://github.com/#')"
+
+if [ "$RLS" = "yes" ]; then
+  ALEXELEC_BUILD="release"
+else
+  ALEXELEC_BUILD="devel"
+fi
+
+TARGET_VERSION="$PROJECT-$ALEXELEC_VERSION-$BUILD_DATE"
+IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
+
+if [ -n "$CUSTOM_IMAGE_NAME" ]; then
+   IMAGE_NAME="$CUSTOM_IMAGE_NAME"
+fi
+
+if [ -n "$IMAGE_SUFFIX" ]; then
+  IMAGE_NAME="$IMAGE_NAME-$IMAGE_SUFFIX"
+fi
+
+# setup fakeroot
+  rm -rf $FAKEROOT_SCRIPT   # remove $FAKEROOT_SCRIPT if it exist
+  touch $FAKEROOT_SCRIPT    # create an empty $FAKEROOT_SCRIPT
+  chmod +x $FAKEROOT_SCRIPT # make $FAKEROOT_SCRIPT executable
+  echo "chown -R 0:0 $INSTALL" >> $FAKEROOT_SCRIPT
+
+# clean old install dirs
+  rm -rf $INSTALL
+  rm -rf $STAMPS_INSTALL
+  mkdir -p $INSTALL
+
+# create baselayout
+  mkdir -p $INSTALL/bin
+  mkdir -p $INSTALL/etc
+  mkdir -p $INSTALL/lib
+  mkdir -p $INSTALL/sbin
+  mkdir -p $INSTALL/dev
+  mkdir -p $INSTALL/proc
+  mkdir -p $INSTALL/run
+  mkdir -p $INSTALL/sys
+  mkdir -p $INSTALL/tmp
+  mkdir -p $INSTALL/usr
+  mkdir -p $INSTALL/var
+  mkdir -p $INSTALL/flash
+  mkdir -p $INSTALL/storage
+  ln -sf /var/media $INSTALL/media
+
+  if [ "$TARGET_ARCH" = "x86_64" ]; then
+    ln -s /lib $INSTALL/lib64
+    ln -s lib $INSTALL/usr/lib64
+  fi
+
+  echo "$TARGET_VERSION" > $INSTALL/etc/release
+
+# create /etc/os-release
+  echo -e "NAME=\"$DISTRONAME\"" > $INSTALL/etc/os-release
+  echo -e "VERSION=\"$ALEXELEC_VERSION\"" >> $INSTALL/etc/os-release
+  echo -e "ID=\"alexelec\"" >> $INSTALL/etc/os-release
+  echo -e "VERSION_ID=\"$OS_VERSION\"" >> $INSTALL/etc/os-release
+  echo -e "PRETTY_NAME=\"$DISTRONAME ($ALEXELEC_BUILD) - Version: $ALEXELEC_VERSION\"" >> $INSTALL/etc/os-release
+  echo -e "HOME_URL=\"http://www.alexelec.in.ua\"" >> $INSTALL/etc/os-release
+  echo -e "BUG_REPORT_URL=\"$ORIGIN_URL\"" >> $INSTALL/etc/os-release
+  echo -e "BUILD_ID=\"$GIT_HASH\"" >> $INSTALL/etc/os-release
+  echo -e "ALEXELEC_ARCH=\"$PROJECT.$TARGET_ARCH\"" >> $INSTALL/etc/os-release
+  echo -e "ALEXELEC_BUILD=\"$ALEXELEC_BUILD\"" >> $INSTALL/etc/os-release
+
+# create /etc/issue
+  echo "$GREETING0" >  $INSTALL/etc/issue
+  echo "$GREETING1" >> $INSTALL/etc/issue
+  echo "$GREETING2" >> $INSTALL/etc/issue
+  echo "$GREETING3" >> $INSTALL/etc/issue
+  echo "$GREETING4" >> $INSTALL/etc/issue
+  echo "$DISTRONAME ($ALEXELEC_BUILD) Version: $ALEXELEC_VERSION" >> $INSTALL/etc/issue
+
+  ln -sf /etc/issue $INSTALL/etc/motd
+
+# Basissystem...
+  $SCRIPTS/install libc
+  $SCRIPTS/install gcc
+  $SCRIPTS/install linux
+  $SCRIPTS/install linux-drivers
+  $SCRIPTS/install linux-firmware
+  $SCRIPTS/install $BOOTLOADER
+  $SCRIPTS/install busybox
+  $SCRIPTS/install util-linux
+  $SCRIPTS/install corefonts
+  $SCRIPTS/install network
+
+# Graphic support
+  [ ! "$DISPLAYSERVER" = "no" ] && $SCRIPTS/install $DISPLAYSERVER
+
+# Multimedia support
+  [ ! "$MEDIACENTER" = "no" ] && $SCRIPTS/install mediacenter
+
+# Sound support
+  [ "$ALSA_SUPPORT" = "yes" ] && $SCRIPTS/install alsa
+
+# Automounter support
+  [ "$UDEVIL" = "yes" ] && $SCRIPTS/install udevil
+
+# NTFS 3G support
+  [ "$EXFAT" = "yes" ] && $SCRIPTS/install fuse-exfat
+
+# NTFS 3G support
+  [ "$NTFS3G" = "yes" ] && $SCRIPTS/install ntfs-3g_ntfsprogs
+
+# Remote support
+  [ "$REMOTE_SUPPORT" = "yes" ] && $SCRIPTS/install remote
+
+# LCD support
+  [ ! "$LCD_DRIVER" = "none" ] && $SCRIPTS/install lcdproc
+
+# Installer support
+  [ "$INSTALLER_SUPPORT" = "yes" ] && $SCRIPTS/install installer
+
+# Devtools... (not for Release)
+  [ "$TESTING" = "yes" ] && $SCRIPTS/install testing
+
+# Install gdb in all builds, including releases
+  $SCRIPTS/install debug
+
+# OEM packages
+  [ "$OEM_SUPPORT" = "yes" ] && $SCRIPTS/install oem
+
+# copy project related files to filesystem
+  if [ -d "$PROJECT_DIR/$PROJECT/filesystem" ]; then
+    cp -PR $PROJECT_DIR/$PROJECT/filesystem/* $INSTALL
+    # install project specific systemd services
+    for service in $PROJECT_DIR/$PROJECT/filesystem/usr/lib/systemd/system/*.service ; do
+      if [ -f "$service" ] ; then
+        enable_service $(basename $service)
+      fi
+    done
+  fi
+
+# run depmod
+  MODVER=`ls $BUILD/linux-*/.install_pkg/lib/modules`
+
+  # move original modules dir
+  mv -f $INSTALL/lib/modules/$MODVER $INSTALL/lib/modules/$MODVER-core
+  ln -sf /storage/.modules/$MODVER $INSTALL/lib/modules/$MODVER
+
+  # Core
+  find $INSTALL/lib/modules/$MODVER-core/ -name *.ko | \
+    sed -e "s,$INSTALL/lib/modules/$MODVER-core/,," > $INSTALL/lib/modules/$MODVER-core/modules.order
+  $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $MODVER-core 2> /dev/null
+
+  # TBS
+  if [ -d "$INSTALL/lib/modules/$MODVER-tbs" ]; then
+    find $INSTALL/lib/modules/$MODVER-tbs/ -name *.ko | \
+      sed -e "s,$INSTALL/lib/modules/$MODVER-tbs/,," > $INSTALL/lib/modules/$MODVER-tbs/modules.order
+    $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $MODVER-tbs 2> /dev/null
+  fi
+
+  # Media_Build
+  if [ -d "$INSTALL/lib/modules/$MODVER-mb" ]; then
+    find $INSTALL/lib/modules/$MODVER-mb/ -name *.ko | \
+      sed -e "s,$INSTALL/lib/modules/$MODVER-mb/,," > $INSTALL/lib/modules/$MODVER-mb/modules.order
+    $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $MODVER-mb 2> /dev/null
+  fi
+
+# strip kernel modules
+  for MOD in `find $INSTALL/lib/modules/ -type f -name *.ko`; do
+    $STRIP --strip-debug $MOD
+  done
+
+# make target dir
+  mkdir -p $TARGET_IMG
+    rm -rf $TARGET_IMG/$IMAGE_NAME.kernel
+
+# copy kernel to target dir
+  if [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
+    echo "injecting DeviceTreeBlobs to kernel..."
+    perl $BUILD/linux-$(kernel_version)/scripts/mkknlimg $BUILD/linux-$(kernel_version)/arch/$TARGET_KERNEL_ARCH/boot/$KERNEL_TARGET $TARGET_IMG/$IMAGE_NAME.kernel
+    echo "...done"
+  else
+    cp -PR $BUILD/linux-$(kernel_version)/arch/$TARGET_KERNEL_ARCH/boot/$KERNEL_TARGET $TARGET_IMG/$IMAGE_NAME.kernel
+  fi
+  chmod 0644 $TARGET_IMG/$IMAGE_NAME.kernel
+
+# create squashfs file
+  if [ -z "$SQUASHFS_COMPRESSION" ]; then
+    SQUASHFS_COMPRESSION="gzip"
+  fi
+
+  echo "rm -rf $TARGET_IMG/$IMAGE_NAME.system" >> $FAKEROOT_SCRIPT
+  echo "$ROOT/$TOOLCHAIN/bin/mksquashfs $BUILD/image/system $TARGET_IMG/$IMAGE_NAME.system -noappend -comp $SQUASHFS_COMPRESSION" >> $FAKEROOT_SCRIPT
+
+# run fakeroot
+  $ROOT/$TOOLCHAIN/bin/fakeroot -- $FAKEROOT_SCRIPT
+  rm -rf $FAKEROOT_SCRIPT
+
+# set permissions
+  chmod 0644 $TARGET_IMG/$IMAGE_NAME.system
+
+  if [ "$1" = "release" -o "$1" = "mkimage" ]; then
+
+    RELEASE_DIR="target/$IMAGE_NAME"
+
+    # cleanup
+      rm -rf $RELEASE_DIR
+
+    # create release dir
+      mkdir -p $RELEASE_DIR
+      # remove n previous created release image
+        rm -rf $TARGET_IMG/$IMAGE_NAME.img.gz
+        if [ -n "$BOOTLOADER" ]; then
+
+          BOOTLOADER_DIR=""
+
+          if [ -z "$BOOTLOADER_DIR" -a -d $PROJECT_DIR/$PROJECT/packages ]; then
+            BOOTLOADER_DIR=`find $PROJECT_DIR/$PROJECT/packages -type d -name $BOOTLOADER 2>/dev/null`
+          fi
+
+          if [ -z "$BOOTLOADER_DIR" -o ! -d "$BOOTLOADER_DIR" ]; then
+            BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
+          fi
+
+          if [ -d "$BOOTLOADER_DIR"/files ]; then
+            cp -R $BOOTLOADER_DIR/files/* $RELEASE_DIR
+          fi
+
+          if [ -f $PROJECT_DIR/$PROJECT/bootloader/release ]; then
+            . $PROJECT_DIR/$PROJECT/bootloader/release
+          elif [ -f "$BOOTLOADER_DIR"/release ]; then
+            . $BOOTLOADER_DIR/release
+          fi
+        fi
+
+        cp $ROOT/README* $RELEASE_DIR
+        cp $ROOT/CHANGELOG* $RELEASE_DIR
+        echo "$TARGET_VERSION" > $RELEASE_DIR/RELEASE
+
+        if [ -n "$MEDIACENTER" ] ; then
+          echo "Kodi commit: `scripts/git_version $MEDIACENTER`" >> $RELEASE_DIR/RELEASE
+        fi
+
+      mkdir -p $RELEASE_DIR/licenses
+        cp $ROOT/licenses/* $RELEASE_DIR/licenses
+
+      mkdir -p $RELEASE_DIR/target
+        cp $TARGET_IMG/$IMAGE_NAME.system $RELEASE_DIR/target/SYSTEM
+        cp $TARGET_IMG/$IMAGE_NAME.kernel $RELEASE_DIR/target/KERNEL
+    # create md5sum's
+      ( cd $RELEASE_DIR;
+        md5sum -t target/SYSTEM > target/SYSTEM.md5;
+        md5sum -t target/KERNEL > target/KERNEL.md5;
+      )
+
+    # create target directory
+      mkdir -p $TARGET_IMG
+
+    # remove an previous created release tarball
+      rm -rf $TARGET_IMG/$IMAGE_NAME.tar
+
+    # create release tarball
+      tar cf $TARGET_IMG/$IMAGE_NAME.tar -C target $IMAGE_NAME
+
+    # create image files if requested
+      if [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
+        # projects can set KERNEL_NAME (kernel.img)
+        if [ -z "$KERNEL_NAME" ] ; then
+          KERNEL_NAME="KERNEL"
+        fi
+
+        UBOOT_SYSTEM=""
+
+        # variables used in image script must be passed
+        env \
+          PATH="$PATH:/sbin" \
+          ROOT="$ROOT" \
+          TOOLCHAIN="$TOOLCHAIN" \
+          TARGET_IMG="$TARGET_IMG" \
+          IMAGE_NAME="$IMAGE_NAME" \
+          BOOTLOADER="$BOOTLOADER" \
+          KERNEL_NAME="$KERNEL_NAME" \
+          RELEASE_DIR="$RELEASE_DIR" \
+          UUID_SYSTEM="$(uuidgen)" \
+          UUID_STORAGE="$(uuidgen)" \
+          UBOOT_SYSTEM="$UBOOT_SYSTEM" \
+          EXTRA_CMDLINE="$EXTRA_CMDLINE" \
+          SYSTEM_SIZE="$SYSTEM_SIZE" \
+          SYSTEM_PART_START="$SYSTEM_PART_START" \
+          $SCRIPTS/mkimage
+      fi
+
+    # cleanup release dir
+      rm -rf $RELEASE_DIR
+    # clean up target directory
+      rm -rf $TARGET_IMG/$IMAGE_NAME.kernel
+      rm -rf $TARGET_IMG/$IMAGE_NAME.system
+
+    # create md5sum's
+      echo "Creating md5sum's..."
+      pushd target > /dev/null
+      md5sum -t $IMAGE_NAME.tar > $IMAGE_NAME.tar.md5
+      if [ -e "$IMAGE_NAME.img.gz" ]; then
+        md5sum -t $IMAGE_NAME.img.gz > $IMAGE_NAME.img.gz.md5
+      fi
+      popd > /dev/null
+  fi

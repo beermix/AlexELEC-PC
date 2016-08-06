@@ -1,0 +1,20 @@
+[Unit]
+Description=Wait on network
+Requisite=connman.service
+After=connman.service
+Before=network-online.target
+DefaultDependencies=no
+Conflicts=shutdown.target
+ConditionPathExists=/storage/.cache/alexelec/network_wait
+
+[Service]
+Type=oneshot
+EnvironmentFile=/storage/.cache/alexelec/network_wait
+ExecStartPre=/bin/sh -c 'echo "waiting on Network to come online ... (max. $WAIT_NETWORK_TIME sec.)"'
+ExecStart=/bin/sh -c 'exec /usr/bin/cm-online ${WAIT_NETWORK_TIME} > /dev/null 2>&1'
+ExecStartPost=/bin/sh -c 'echo "Network wait is over."'
+StandardOutput=tty
+RemainAfterExit=yes
+
+[Install]
+WantedBy=network-online.target
