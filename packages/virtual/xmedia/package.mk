@@ -30,6 +30,11 @@ PKG_AUTORECONF="no"
 # games
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET retroarch emulationstation"
 
+# torrent
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET acestream"
+  #PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET aceproxy"
+  #PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET transmission"
+
 # dvb drivers
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET media_build"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET tbs-crazycat"
