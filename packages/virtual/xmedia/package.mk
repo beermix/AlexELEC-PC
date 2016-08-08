@@ -19,7 +19,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 # tools
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mc scan-s2"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mc scan-s2 inputlirc"
 
 # camd
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET wicard oscam"
