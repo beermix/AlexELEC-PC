@@ -75,7 +75,7 @@ post_patch() {
 
   make -C $PKG_BUILD oldconfig
   # MenuConfig enable
-  make -C $PKG_BUILD menuconfig
+  #make -C $PKG_BUILD menuconfig
 }
 
 makeinstall_host() {
