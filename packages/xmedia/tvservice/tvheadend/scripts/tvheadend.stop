@@ -6,12 +6,8 @@
 
 . /etc/profile
 
-  if [ "$(pidof LCDd)" ]; then
-      logger -t LCDd "Stop LCD daemon (exit VDR)..."
-      killall LCDd > /dev/null 2>&1
-  fi
-
+logger -t tvheadend "Tvheadend stop..."
 # wicard and oscam services stop
-camd_stop VDR
+camd_stop TVH
 
 exit 0

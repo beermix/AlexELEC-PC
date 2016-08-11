@@ -8,7 +8,6 @@
 [ -f /storage/.config/vdr/vdr-plugins.conf ] && . /storage/.config/vdr/vdr-plugins.conf
 
 LOCK_DIR="/var/lock"
-WICARD_DIR="/storage/.config/wicard"
 SERVICE_DIR="/storage/.cache/services"
 . $SERVICE_DIR/tvservice.conf
 
@@ -16,25 +15,6 @@ SERVICE_DIR="/storage/.cache/services"
 [ -f "$SERVICE_DIR/softhd.conf" ] && . $SERVICE_DIR/softhd.conf
 [ -f "$SERVICE_DIR/remote.conf" ] && . $SERVICE_DIR/remote.conf
 [ -f "$SERVICE_DIR/locale.conf" ] && . $SERVICE_DIR/locale.conf
-
-# wicard and oscam services start
-camd_start() {
-  if [ -f "$SERVICE_DIR/wicard.conf" ]; then
-    . $SERVICE_DIR/wicard.conf
-    if [ "$WICARD_TYPE" == "TVonly" ]; then
-      touch $LOCK_DIR/start.wicard
-      systemctl start wicard.service
-    fi
-  fi
-
-  if [ -f "$SERVICE_DIR/oscam.conf" ]; then
-    . $SERVICE_DIR/oscam.conf
-    if [ "$OSCAM_TYPE" == "TVonly" ]; then
-      touch $LOCK_DIR/start.oscam
-      systemctl start oscam.service
-    fi
-  fi
-}
 
 # init VDR
 vdr_init() {
@@ -133,11 +113,9 @@ vdr_init() {
 }
 
 # VDR service start
-/usr/bin/hidmap vdr
-/usr/bin/lcdproc vdr
 vdr_init
-wait_for_dvb
-camd_start
+# wicard and oscam services start
+camd_start VDR
 
 PRESHELL="/storage/.config/preshell.sh"
 if [ -f $PRESHELL ]; then

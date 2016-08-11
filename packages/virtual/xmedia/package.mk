@@ -28,7 +28,7 @@ PKG_AUTORECONF="no"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET wicard oscam"
 
 # tv services
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET vdr-all"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET vdr-all tvheadend"
 
 # games
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET retroarch emulationstation"
