@@ -1,11 +1,15 @@
 [Unit]
 Description=Tvheadend
+After=network-online.target
+Wants=network-online.target
 ConditionPathExists=/storage/.cache/services/tvheadend.conf
 
 [Service]
-ExecStart=/bin/sh -c 'exec /usr/bin/tvheadend.start'
+EnvironmentFile=-/run/alexelec/tvh.conf
+ExecStartPre=-/usr/bin/tvh-config
+ExecStart=/usr/bin/tvheadend $TVH_ARGS
 ExecStop=/bin/kill -TERM $MAINPID
-ExecStopPost=/bin/sh -c 'exec /usr/bin/tvheadend.stop'
+ExecStopPost=/usr/bin/tvh-stop
 TimeoutStopSec=5
 Restart=always
 RestartSec=2
