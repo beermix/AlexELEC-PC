@@ -12,7 +12,7 @@ rm -f $LOCK_DIR/start.wicard
 if [ -f "$SERVICE_DIR/wicard.conf" ]; then
   . $SERVICE_DIR/wicard.conf
 
-  if [ "$WICARD_TYPE" == "Always" ]; then
+  if [ "$WICARD_TYPE" == "ALL" ]; then
       touch $LOCK_DIR/start.wicard
   fi
 

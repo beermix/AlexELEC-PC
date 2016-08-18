@@ -4,7 +4,7 @@
 ################################################################################
 
 PKG_NAME="acestream"
-PKG_VERSION="3.0.5.1"
+PKG_VERSION="3.1.0-b3-pre4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -25,4 +25,7 @@ make_target() {
 makeinstall_target() {
   mkdir -p $INSTALL
     cp -a $ROOT/$PKG_BUILD/usr $INSTALL
+    cp $PKG_DIR/scripts/* $INSTALL/usr/bin
+  mkdir -p $INSTALL/usr/config
+    cp $PKG_DIR/config/* $INSTALL/usr/config
 }

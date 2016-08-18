@@ -12,7 +12,7 @@ rm -f $LOCK_DIR/start.oscam
 if [ -f "$SERVICE_DIR/oscam.conf" ]; then
   . $SERVICE_DIR/oscam.conf
 
-  if [ "$OSCAM_TYPE" == "Always" ]; then
+  if [ "$OSCAM_TYPE" == "ALL" ]; then
       touch $LOCK_DIR/start.oscam
   fi
 
