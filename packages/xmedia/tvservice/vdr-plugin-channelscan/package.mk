@@ -4,7 +4,7 @@
 ################################################################################
 
 PKG_NAME="vdr-plugin-channelscan"
-PKG_VERSION="0.6.2-mod-9"
+PKG_VERSION="0.6.2-mod-10b3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -22,7 +22,7 @@ PKG_LOCALE_INSTALL="yes"
 pre_make_target() {
   export LDFLAGS="$LDFLAGS -L$SYSROOT_PREFIX/usr/lib/iconv"
   # dont build parallel
-  MAKEFLAGS=-j1
+  # MAKEFLAGS=-j1
 }
 
 make_target() {
