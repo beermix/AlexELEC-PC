@@ -39,7 +39,7 @@ makeinstall_target() {
   mkdir -p  $INSTALL/usr/bin
     cp $ROOT/$PKG_BUILD/.$TARGET_NAME/oscam $INSTALL/usr/bin
     cp $ROOT/$PKG_BUILD/.$TARGET_NAME/utils/list_smargo $INSTALL/usr/bin
-    cp $PKG_DIR/bin/* $INSTALL/usr/bin
+    cp $PKG_DIR/scripts/* $INSTALL/usr/bin
 }
 
 post_install() {

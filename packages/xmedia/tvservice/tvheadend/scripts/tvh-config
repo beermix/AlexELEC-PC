@@ -48,7 +48,5 @@ fi
 
 # wait for DVB
 wait_for_dvb
-# wicard and oscam services start
-camd_start TVH
 
 echo "TVH_ARGS=\"$TVHEADEND_ARG\"" > /run/alexelec/tvh.conf

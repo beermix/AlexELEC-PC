@@ -3,8 +3,11 @@
 #      Copyright (C) 2011-2016 Alexandr Zuyev (alex@alexelec.in.ua)
 ################################################################################
 
+CAMD_RUN=$1
+CAMD_PRG=$2
 LOCK_DIR="/var/lock"
 SERVICE_DIR=/storage/.cache/services
+[ -z "$CAMD_PRG" ] && CAMD_PRG="Unknown"
 
 # wicard and oscam services start
 camd_start() {
@@ -12,7 +15,7 @@ camd_start() {
     . $SERVICE_DIR/wicard.conf
     if [ "$WICARD_TYPE" == "TVON" ]; then
       touch $LOCK_DIR/start.wicard
-      logger -t wicard "Starting for... $1"
+      logger -t wicard "Starting for... $CAMD_PRG"
       systemctl start wicard.service
     fi
   fi
@@ -21,7 +24,7 @@ camd_start() {
     . $SERVICE_DIR/oscam.conf
     if [ "$OSCAM_TYPE" == "TVON" ]; then
       touch $LOCK_DIR/start.oscam
-      logger -t oscam "Starting for... $1"
+      logger -t oscam "Starting for... $CAMD_PRG"
       systemctl start oscam.service
     fi
   fi
@@ -33,7 +36,7 @@ camd_stop () {
     . $SERVICE_DIR/wicard.conf
     if [ "$WICARD_TYPE" == "TVON" ]; then
       rm -f $LOCK_DIR/start.wicard
-      logger -t wicard "Stoping for... $1"
+      logger -t wicard "Stoping for... $CAMD_PRG"
       systemctl stop wicard.service
     fi
   fi
@@ -42,8 +45,19 @@ camd_stop () {
     . $SERVICE_DIR/oscam.conf
     if [ "$OSCAM_TYPE" == "TVON" ]; then
       rm -f $LOCK_DIR/start.oscam
-      logger -t oscam "Stoping for... $1"
+      logger -t oscam "Stoping for... $CAMD_PRG"
       systemctl stop oscam.service
     fi
   fi
 }
+
+if [ "$CAMD_RUN" == "start" ]; then
+  camd_start
+elif [ "$CAMD_RUN" == "stop" ]; then
+  camd_stop
+else
+  echo "use: camd start/stop"
+fi
+
+exit 0
+
