@@ -1,0 +1,11 @@
+diff -Naurp kodi-4982009/xbmc/addons/AddonManager.cpp kodi-4982009-patch/xbmc/addons/AddonManager.cpp
+--- kodi-4982009/xbmc/addons/AddonManager.cpp	2016-04-26 10:59:06.000000000 +0300
++++ kodi-4982009-patch/xbmc/addons/AddonManager.cpp	2016-06-16 14:20:12.000000000 +0300
+@@ -679,6 +679,7 @@ bool CAddonMgr::AddToUpdateBlacklist(con
+ bool CAddonMgr::IsBlacklisted(const std::string& id) const
+ {
+   CSingleLock lock(m_critSection);
++  if (id.substr(0,4) == "pvr.") return true;
+   return m_updateBlacklist.find(id) != m_updateBlacklist.end();
+ }
+ 

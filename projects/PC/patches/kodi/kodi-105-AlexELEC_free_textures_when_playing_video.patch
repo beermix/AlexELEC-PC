@@ -1,0 +1,14 @@
+diff -Naurp kodi-4982009/xbmc/Application.cpp kodi-4982009-patch/xbmc/Application.cpp
+--- kodi-4982009/xbmc/Application.cpp	2016-08-19 15:10:28.000000000 +0300
++++ kodi-4982009-patch/xbmc/Application.cpp	2016-08-19 14:13:37.000000000 +0300
+@@ -4657,8 +4657,8 @@ void CApplication::ProcessSlow()
+   // check for any idle curl connections
+   g_curlInterface.CheckIdle();
+ 
+-  if (!m_pPlayer->IsPlayingVideo())
+-    g_largeTextureManager.CleanupUnusedImages();
++  // We still need to free textures when playing video
++  g_largeTextureManager.CleanupUnusedImages();
+ 
+   g_TextureManager.FreeUnusedTextures(5000);
+ 

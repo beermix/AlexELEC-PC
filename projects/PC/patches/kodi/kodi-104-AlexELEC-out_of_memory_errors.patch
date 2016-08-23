@@ -1,0 +1,12 @@
+diff -Naurp kodi-4982009/lib/libexif/libexif.h kodi-4982009-patch/lib/libexif/libexif.h
+--- kodi-4982009/lib/libexif/libexif.h	2016-04-26 10:59:06.000000000 +0300
++++ kodi-4982009-patch/lib/libexif/libexif.h	2016-06-24 14:45:18.000000000 +0300
+@@ -81,7 +81,7 @@ typedef struct {
+ #define EXIF_COMMENT_CHARSET_UNICODE    3 // Exif: Unicode (UTF-16)
+ #define EXIF_COMMENT_CHARSET_JIS        4 // Exif: JIS X208-1990
+ 
+-#define MAX_COMMENT 65533 // 2 bytes - 2 for the length param
++#define MAX_COMMENT 2000
+ #define MAX_DATE_COPIES 10
+ 
+ typedef struct {

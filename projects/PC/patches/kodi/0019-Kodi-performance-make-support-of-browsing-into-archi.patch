@@ -1,0 +1,81 @@
+From 0af35a876fe2fa10acd920890a744767ebf3cb4e Mon Sep 17 00:00:00 2001
+From: Jamie Coldhill <wrxtasy@amnet.net.au>
+Date: Sun, 15 May 2016 21:00:57 +0800
+Subject: [PATCH 19/28] Kodi: performance - make support of browsing into
+ archives optional - credits to Popcornmix
+
+---
+ addons/resource.language.en_gb/resources/strings.po |   10 ++++++++++
+ system/settings/settings.xml                        |    5 +++++
+ xbmc/filesystem/FileDirectoryFactory.cpp            |    4 ++++
+ 3 files changed, 19 insertions(+)
+
+diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
+index 8b20a3d..8c27845 100644
+--- a/addons/resource.language.en_gb/resources/strings.po
++++ b/addons/resource.language.en_gb/resources/strings.po
+@@ -18171,6 +18171,16 @@ msgctxt "#38023"
+ msgid "Set my rating"
+ msgstr ""
+ 
++#: system/settings/settings.xml
++msgctxt "#38024"
++msgid "Support browsing into archives"
++msgstr ""
++
++#: system/settings/settings.xml
++msgctxt "#38025"
++msgid "Allow viewing and playing files in archives (e.g. zip, rar)"
++msgstr ""
++
+ #: system/peripherals.xml
+ msgctxt "#38050"
+ msgid "Remote button press delay before repeating (ms)"
+diff --git a/system/settings/settings.xml b/system/settings/settings.xml
+index 1e899eb..9fb2f91 100644
+--- a/system/settings/settings.xml
++++ b/system/settings/settings.xml
+@@ -317,6 +317,11 @@
+           <default>false</default>
+           <control type="toggle" />
+         </setting>
++        <setting id="filelists.browsearchives" type="boolean" label="38024" help="38025">
++          <level>1</level>
++          <default>false</default>
++          <control type="toggle" />
++        </setting>
+       </group>
+     </category>
+     <category id="screensaver" label="360" help="36128">
+diff --git a/xbmc/filesystem/FileDirectoryFactory.cpp b/xbmc/filesystem/FileDirectoryFactory.cpp
+index a1d4ee4..bddddb7 100644
+--- a/xbmc/filesystem/FileDirectoryFactory.cpp
++++ b/xbmc/filesystem/FileDirectoryFactory.cpp
+@@ -40,6 +40,7 @@
+ #include "playlists/PlayListFactory.h"
+ #include "Directory.h"
+ #include "File.h"
++#include "settings/Settings.h"
+ #include "FileItem.h"
+ #include "utils/StringUtils.h"
+ #include "URL.h"
+@@ -112,6 +113,8 @@ IFileDirectory* CFileDirectoryFactory::Create(const CURL& url, CFileItem* pItem,
+     return NULL;
+   }
+ #endif
++  if (CSettings::GetInstance().GetBool("filelists.browsearchives"))
++  {
+   if (url.IsFileType("zip"))
+   {
+     CURL zipURL = URIUtils::CreateArchivePath("zip", url);
+@@ -192,6 +195,7 @@ IFileDirectory* CFileDirectoryFactory::Create(const CURL& url, CFileItem* pItem,
+ 
+     return new CXbtDirectory();
+   }
++  }
+   if (url.IsFileType("xsp"))
+   { // XBMC Smart playlist - just XML renamed to XSP
+     // read the name of the playlist in
+-- 
+1.7.10.4
+

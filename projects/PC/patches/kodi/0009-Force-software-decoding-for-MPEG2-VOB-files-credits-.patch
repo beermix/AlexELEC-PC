@@ -1,0 +1,34 @@
+From f8e9e0edaf14ce631a7fd195fd6f194b3d63509d Mon Sep 17 00:00:00 2001
+From: Alan Marchesan <justcavalli@gmail.com>
+Date: Thu, 4 Feb 2016 07:12:25 +0100
+Subject: [PATCH 09/28] Force software decoding for MPEG2 VOB files (credits
+ to wrxtasy)
+
+---
+ xbmc/cores/dvdplayer/DVDPlayer.cpp |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
+index 4ffe33a..7c7cdd3 100644
+--- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
++++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
+@@ -3521,6 +3521,16 @@ bool CDVDPlayer::OpenVideoStream(CDVDStreamInfo& hint, bool reset)
+       }
+     }
+   }
++  
++  if (m_pInputStream)
++  {
++    std::string filename = m_pInputStream->GetFileName();
++    if (StringUtils::EndsWithNoCase(filename, "vob"))
++    {
++      CLog::Log(LOGDEBUG, "CDVDPlayer::OpenVideoStream -- %s", filename.c_str());
++      hint.software = true;
++    }
++  }
+ 
+   CDVDInputStream::IMenus* pMenus = dynamic_cast<CDVDInputStream::IMenus*>(m_pInputStream);
+   if(pMenus && pMenus->IsInMenu())
+-- 
+1.7.10.4
+

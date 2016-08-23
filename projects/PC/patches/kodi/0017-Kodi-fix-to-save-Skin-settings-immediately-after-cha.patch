@@ -1,0 +1,45 @@
+From 1007817e5f3bb22a5435c5891ad0f9d3fb0228ca Mon Sep 17 00:00:00 2001
+From: Jamie Coldhill <wrxtasy@amnet.net.au>
+Date: Sun, 15 May 2016 20:49:11 +0800
+Subject: [PATCH 17/28] Kodi: fix to save Skin settings immediately after
+ changes
+
+---
+ xbmc/settings/SkinSettings.cpp |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/xbmc/settings/SkinSettings.cpp b/xbmc/settings/SkinSettings.cpp
+index b53e4a2..bec45a3 100644
+--- a/xbmc/settings/SkinSettings.cpp
++++ b/xbmc/settings/SkinSettings.cpp
+@@ -59,6 +59,7 @@ const std::string& CSkinSettings::GetString(int setting) const
+ void CSkinSettings::SetString(int setting, const std::string &label)
+ {
+   g_SkinInfo->SetString(setting, label);
++  g_SkinInfo->SaveSettings();
+ }
+ 
+ int CSkinSettings::TranslateBool(const std::string &setting)
+@@ -74,16 +75,19 @@ bool CSkinSettings::GetBool(int setting) const
+ void CSkinSettings::SetBool(int setting, bool set)
+ {
+   g_SkinInfo->SetBool(setting, set);
++  g_SkinInfo->SaveSettings();
+ }
+ 
+ void CSkinSettings::Reset(const std::string &setting)
+ {
+   g_SkinInfo->Reset(setting);
++  g_SkinInfo->SaveSettings();
+ }
+ 
+ void CSkinSettings::Reset()
+ {
+   g_SkinInfo->Reset();
++  g_SkinInfo->SaveSettings();
+ 
+   g_infoManager.ResetCache();
+ }
+-- 
+1.7.10.4
+
