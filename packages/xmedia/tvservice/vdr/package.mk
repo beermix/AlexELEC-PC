@@ -37,7 +37,7 @@ pre_make_target() {
   MANDIR    = /usr/share/man
   PCDIR     = /usr/lib/pkgconfig
   RESDIR    = /storage/.config/vdr
-  VIDEODIR = /storage/videos
+  VIDEODIR = /storage/recordings
   CONFDIR = /storage/.config/vdr
   CACHEDIR  = /storage/.cache/vdr
   LIBS += -liconv
@@ -59,7 +59,7 @@ post_makeinstall_target() {
     rm -rf $INSTALL/storage
 
   mkdir -p $INSTALL/usr/bin
-    cp $PKG_DIR/bin/* $INSTALL/usr/bin
+    cp $PKG_DIR/scripts/* $INSTALL/usr/bin
 }
 
 post_install() {

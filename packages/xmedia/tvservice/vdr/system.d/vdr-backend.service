@@ -3,9 +3,12 @@ Description=VDR backend service
 ConditionPathExists=/storage/.cache/services/vdr-backend.conf
 
 [Service]
-ExecStart=/bin/sh -c 'exec /usr/bin/vdr-backend.start'
+EnvironmentFile=-/run/alexelec/vdr-backend.conf
+ExecStartPre=-/usr/bin/vdr_backend-config
+ExecStartPre=-/usr/bin/camd start VDR
+ExecStart=/bin/sh -c "eval LANG=$SYS_LOCALE exec vdr $VDR_ARGS"
 ExecStop=/bin/kill -KILL $MAINPID
-ExecStopPost=/bin/sh -c 'exec /usr/bin/vdr-backend.stop'
+ExecStopPost=/usr/bin/camd stop VDR
 TimeoutStopSec=5
 Restart=always
 RestartSec=2
