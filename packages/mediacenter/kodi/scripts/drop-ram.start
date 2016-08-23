@@ -6,8 +6,10 @@
 
 . /etc/profile
 
+SERVICE_DIR=/storage/.cache/services
+
 [ -f "$SERVICE_DIR/ramclear.conf" ] && . $SERVICE_DIR/ramclear.conf
-[ -z "$RAMCLEAR_TIME" ] && RAMCLEAR_TIME="60"
+[ -z "$RAMCLEAR_TIME" ] && RAMCLEAR_TIME="5"
 
 if [ $RAMCLEAR_TIME -ge 1 ]; then
   while [ true ] ; do
@@ -16,3 +18,5 @@ if [ $RAMCLEAR_TIME -ge 1 ]; then
       logger -t memory "Next clear memory after $RAMCLEAR_TIME min."
   done &
 fi
+
+exit 0
