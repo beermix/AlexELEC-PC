@@ -1,0 +1,35 @@
+diff -Naurp kodi-language-addons-a8158f7/resource.language.ru_ru/resources/strings.po kodi-language-addons-a8158f7-patch/resource.language.ru_ru/resources/strings.po
+--- kodi-language-addons-a8158f7/resource.language.ru_ru/resources/strings.po	2016-06-15 21:29:43.000000000 +0300
++++ kodi-language-addons-a8158f7-patch/resource.language.ru_ru/resources/strings.po	2016-08-23 17:49:38.000000000 +0300
+@@ -4326,8 +4326,8 @@ msgid "Total uptime"
+ msgstr "Общее время работы"
+ 
+ msgctxt "#12395"
+-msgid "Battery level"
+-msgstr "Уровень батареи"
++msgid "Linux version"
++msgstr "Версия Linux"
+ 
+ msgctxt "#12396"
+ msgid "Auto updates: On"
+@@ -4386,16 +4386,16 @@ msgid "Quit"
+ msgstr "Выход"
+ 
+ msgctxt "#13010"
+-msgid "Hibernate"
+-msgstr "Спящий режим"
++msgid "Games"
++msgstr "Игры"
+ 
+ msgctxt "#13011"
+ msgid "Suspend"
+ msgstr "Ждущий режим"
+ 
+ msgctxt "#13012"
+-msgid "Exit"
+-msgstr "Выход"
++msgid "Live TV (VDR)"
++msgstr "ТВ (VDR)"
+ 
+ msgctxt "#13013"
+ msgid "Reboot"
