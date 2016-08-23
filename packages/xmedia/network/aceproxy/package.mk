@@ -4,7 +4,7 @@
 ################################################################################
 
 PKG_NAME="aceproxy"
-PKG_VERSION="261b3a3"
+PKG_VERSION="26e79d1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"

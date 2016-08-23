@@ -10,23 +10,10 @@ SERVICE_DIR="/storage/.cache/services"
 LOG_TVH="/var/log/tvheadend.log"
 LOG_TVH_OLD="/var/log/tvheadend.log.old"
 TVH_HOME="$HOME/.config/tvheadend"
-LOGOS_DIR="/storage/logos"
-LOGOS_URL="http://src.alexelec.in.ua/logos/ace-logos.tar.bz2"
 
 . $SERVICE_DIR/tvheadend.conf
 
-download_logos () {
-  mkdir -p $LOGOS_DIR
-  rm -f $LOGOS_DIR/ace-logos.tar.bz2
-  wget -c -q -T 5 -P $LOGOS_DIR $LOGOS_URL 2> /dev/null
-  if [ $? == 0 ] ; then
-    tar -jxf $LOGOS_DIR/ace-logos.tar.bz2 -C $LOGOS_DIR
-    rm -f $LOGOS_DIR/ace-logos.tar.bz2
-    touch $LOGOS_DIR/logos.aceproxy
-  fi
-}
-
-[ ! -f "$LOGOS_DIR/logos.aceproxy" ] && download_logos
+download_logos
 
 if [ "$TVH_DEBUG" == "1" ]; then
   [ -f "$LOG_TVH" ] && mv -f $LOG_TVH $LOG_TVH_OLD

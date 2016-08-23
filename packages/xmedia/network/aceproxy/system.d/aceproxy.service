@@ -3,7 +3,7 @@ Description=AceProxy server
 ConditionPathExists=/storage/.cache/services/aceproxy.conf
 
 [Service]
-ExecStartPre=/usr/bin/aceproxy-config.start
+ExecStartPre=/usr/bin/aceproxy-config
 ExecStart=/storage/.config/aceproxy/acehttp.py
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStop=/bin/kill -TERM $MAINPID
