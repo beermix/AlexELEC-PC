@@ -6,19 +6,21 @@
 
 . /etc/profile
 
-SERVICE_DIR="/storage/.cache/services"
 SERVICE="tvheadend.service"
+LOCK_DIR="/var/lock"
 
 case "$1" in
   pre)
-    if [ -f "$SERVICE_DIR/tvheadend.conf" ]; then
+    if systemctl is-active "$SERVICE" &>/dev/null ; then
       progress "stoping $SERVICE ($1)..."
       systemctl stop "$SERVICE"
+      touch $LOCK_DIR/tvheadend.sleep
     fi
     ;;
   post)
-    if [ -f "$SERVICE_DIR/tvheadend.conf" ]; then
+    if [ -f "$LOCK_DIR/tvheadend.sleep" ]; then
       progress "starting $SERVICE ($1)..."
+      rm -f $LOCK_DIR/tvheadend.sleep
       systemctl start "$SERVICE"
     fi
     ;;

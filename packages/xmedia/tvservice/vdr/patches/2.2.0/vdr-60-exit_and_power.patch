@@ -1,6 +1,6 @@
 diff -Naurp vdr-2.2.0/keys.c vdr-2.2.0-patch/keys.c
 --- vdr-2.2.0/keys.c	2012-12-04 14:52:52.000000000 +0200
-+++ vdr-2.2.0-patch/keys.c	2015-10-24 18:41:06.000000000 +0300
++++ vdr-2.2.0-patch/keys.c	2016-08-24 16:32:18.000000000 +0300
 @@ -43,6 +43,8 @@ static tKey keyTable[] = { // "Up" and "
                      { kNext,          trNOOP("Key$Next")        },
                      { kPrev,          trNOOP("Key$Prev")        },
@@ -12,7 +12,7 @@ diff -Naurp vdr-2.2.0/keys.c vdr-2.2.0-patch/keys.c
                      { kChanPrev,      trNOOP("Key$PrevChannel") },
 diff -Naurp vdr-2.2.0/keys.h vdr-2.2.0-patch/keys.h
 --- vdr-2.2.0/keys.h	2015-01-27 12:45:18.000000000 +0200
-+++ vdr-2.2.0-patch/keys.h	2015-10-24 18:41:06.000000000 +0300
++++ vdr-2.2.0-patch/keys.h	2016-08-24 16:32:18.000000000 +0300
 @@ -37,6 +37,8 @@ enum eKeys { // "Up" and "Down" must be
               kNext,
               kPrev,
@@ -23,9 +23,19 @@ diff -Naurp vdr-2.2.0/keys.h vdr-2.2.0-patch/keys.h
               kChanDn,
               kChanPrev,
 diff -Naurp vdr-2.2.0/menu.c vdr-2.2.0-patch/menu.c
---- vdr-2.2.0/menu.c	2015-10-24 18:42:20.000000000 +0300
-+++ vdr-2.2.0-patch/menu.c	2015-10-24 18:41:06.000000000 +0300
-@@ -2010,28 +2010,39 @@ eOSState cMenuCommands::Execute(void)
+--- vdr-2.2.0/menu.c	2016-08-24 17:16:53.000000000 +0300
++++ vdr-2.2.0-patch/menu.c	2016-08-24 16:12:48.000000000 +0300
+@@ -33,6 +33,9 @@
+ #include "transfer.h"
+ #include "videodir.h"
+ 
++#include <fstream>
++#include <algorithm>
++
+ #include "remotetimers.h"
+ 
+ #define MAXWAIT4EPGINFO   3 // seconds
+@@ -2010,28 +2013,54 @@ eOSState cMenuCommands::Execute(void)
                cmdbuf = cString::sprintf("%s %s", *command, *parameters);
             const char *cmd = *cmdbuf ? *cmdbuf : *command;
             dsyslog("executing command '%s'", cmd);
@@ -49,7 +59,22 @@ diff -Naurp vdr-2.2.0/menu.c vdr-2.2.0-patch/menu.c
 -              p.Close();
 -              }
 +           if (strcmp(cmd, "exit") == 0)
++           {
++               bool isBackVDR = std::ifstream("/storage/.cache/services/vdr-backend.conf");
++               bool isBackTVH = std::ifstream("/storage/.cache/services/tvheadend.conf");
++               if (!isBackVDR && !isBackTVH)
++               {
++                  cDevice::PrimaryDevice()->ToggleMute();
++                  esyslog("VDR frontend fast stopping...");
++                  remove("/var/lock/start.vdr");
++                  system("touch /var/lock/start.kodi");
++                  SystemExec("systemctl start kodi.service", true);
++                  system("touch /var/lock/exit-fast.vdr");
++               }
++               else
++                  esyslog("VDR frontend normal stopping...");
 +               ShutdownHandler.Exit(0);
++           }
 +           else if (strcmp(cmd, "sleep") == 0)
 +               ShutdownHandler.Exit(97);
 +           else if (strcmp(cmd, "sysreboot") == 0)
@@ -87,8 +112,8 @@ diff -Naurp vdr-2.2.0/menu.c vdr-2.2.0-patch/menu.c
                return AddSubMenu(new cMenuText(title, result, fontFix));
             return osEnd;
 diff -Naurp vdr-2.2.0/po/ru_RU.po vdr-2.2.0-patch/po/ru_RU.po
---- vdr-2.2.0/po/ru_RU.po	2015-10-24 18:42:20.000000000 +0300
-+++ vdr-2.2.0-patch/po/ru_RU.po	2015-10-24 18:41:06.000000000 +0300
+--- vdr-2.2.0/po/ru_RU.po	2016-08-24 17:16:53.000000000 +0300
++++ vdr-2.2.0-patch/po/ru_RU.po	2016-08-24 16:32:18.000000000 +0300
 @@ -1537,12 +1537,24 @@ msgstr "Остановить live video?"
  msgid "Recording started"
  msgstr "Запись начата"
@@ -118,8 +143,8 @@ diff -Naurp vdr-2.2.0/po/ru_RU.po vdr-2.2.0-patch/po/ru_RU.po
  
 diff -Naurp vdr-2.2.0/shutdown.c vdr-2.2.0-patch/shutdown.c
 --- vdr-2.2.0/shutdown.c	2013-10-02 12:02:01.000000000 +0300
-+++ vdr-2.2.0-patch/shutdown.c	2015-10-24 18:41:06.000000000 +0300
-@@ -130,9 +130,10 @@ void cShutdownHandler::SetShutdownComman
++++ vdr-2.2.0-patch/shutdown.c	2016-08-24 16:15:47.000000000 +0300
+@@ -130,9 +130,9 @@ void cShutdownHandler::SetShutdownComman
  void cShutdownHandler::CallShutdownCommand(time_t WakeupTime, int Channel, const char *File, bool UserShutdown)
  {
    time_t Delta = WakeupTime ? WakeupTime - time(NULL) : 0;
@@ -127,12 +152,11 @@ diff -Naurp vdr-2.2.0/shutdown.c vdr-2.2.0-patch/shutdown.c
 +  cString cmd = cString::sprintf("PowerOFF: %ld %ld %d \"%s\" %d", WakeupTime, Delta, Channel, *strescape(File, "\\\"$"), UserShutdown);
    isyslog("executing '%s'", *cmd);
 -  int Status = SystemExec(cmd, true);
-+  remove("/var/lock/start.vdr");
 +  int Status = SystemExec("systemctl poweroff", true);
    if (!WIFEXITED(Status) || WEXITSTATUS(Status))
       esyslog("SystemExec() failed with status %d", Status);
    else {
-@@ -162,11 +163,6 @@ bool cShutdownHandler::ConfirmShutdown(b
+@@ -162,11 +162,6 @@ bool cShutdownHandler::ConfirmShutdown(b
    if (!Interactive && !cRemote::Enabled())
       return false;
  
@@ -145,8 +169,8 @@ diff -Naurp vdr-2.2.0/shutdown.c vdr-2.2.0-patch/shutdown.c
       if (!Interactive || !Interface->Confirm(tr("Editing - shut down anyway?")))
          return false;
 diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
---- vdr-2.2.0/vdr.c	2015-10-24 18:42:20.000000000 +0300
-+++ vdr-2.2.0-patch/vdr.c	2015-10-24 18:09:05.000000000 +0300
+--- vdr-2.2.0/vdr.c	2016-08-24 17:16:53.000000000 +0300
++++ vdr-2.2.0-patch/vdr.c	2016-08-24 16:11:45.000000000 +0300
 @@ -76,8 +76,8 @@
  #define ACTIVITYTIMEOUT       60 // seconds before starting housekeeping
  #define SHUTDOWNWAIT         300 // seconds to wait in user prompt before automatic shutdown
@@ -167,7 +191,7 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
                    // Not pressed power - set VDR to be non-interactive and power down later:
                    ShutdownHandler.SetUserInactive();
                    break;
-@@ -1284,6 +1284,60 @@ int main(int argc, char *argv[])
+@@ -1284,6 +1284,73 @@ int main(int argc, char *argv[])
                 // Do not attempt to automatically shut down for a while:
                 ShutdownHandler.SetRetry(SHUTDOWNRETRY);
                 break;
@@ -192,6 +216,19 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
 +                  // If final question was canceled, continue to be active:
 +                  break;
 +               // Ok, now call the exit script:
++               isVDRBack = std::ifstream("/storage/.cache/services/vdr-backend.conf");
++               isTVHBack = std::ifstream("/storage/.cache/services/tvheadend.conf");
++               if (!isVDRBack && !isTVHBack)
++               {
++                  cDevice::PrimaryDevice()->ToggleMute();
++                  esyslog("VDR frontend fast stopping...");
++                  remove("/var/lock/start.vdr");
++                  system("touch /var/lock/start.kodi");
++                  SystemExec("systemctl start kodi.service", true);
++                  system("touch /var/lock/exit-fast.vdr");
++               }
++               else
++                  esyslog("VDR frontend normal stopping...");
 +               EXIT(0);
 +               // Set VDR to be non-interactive and exit down again later:
 +               ShutdownHandler.SetUserInactive();
@@ -228,28 +265,35 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
            default: break;
            }
          Interact = Menu ? Menu : cControl::Control(); // might have been closed in the mean time
-@@ -1504,5 +1558,27 @@ Exit:
+@@ -1510,5 +1577,34 @@ Exit:
       closelog();
    if (HasStdin)
       tcsetattr(STDIN_FILENO, TCSANOW, &savedTm);
 +
++  // EXIT code
++  bool isFast = std::ifstream("/var/lock/exit-fast.vdr");
 +  switch(ShutdownHandler.GetExitCode()) {
 +     case 0: // Exit to Kodi
-+         remove("/var/lock/start.vdr");
-+         system("touch /var/lock/start.kodi");
-+         SystemExec("systemctl start kodi.service", true);
-+         SystemExec("vdr.stop", true);
++         if (isFast)
++         {
++            remove("/var/lock/exit-fast.vdr");
++            esyslog("VDR frontend fast exit!!!");
++         }
++         else
++         {
++            esyslog("VDR frontend normal exit!!!");
++            remove("/var/lock/start.vdr");
++            system("touch /var/lock/start.kodi");
++            SystemExec("systemctl start kodi.service", true);
++         }
 +         break;
 +     case 97: // Sleep
-+         system("touch /var/lock/sleep.vdr");
 +         SystemExec("systemctl suspend", true);
 +         break;
 +     case 98: // Reboot
-+         remove("/var/lock/start.vdr");
 +         SystemExec("systemctl reboot", true);
 +         break;
-+     case 99: // Reboot
-+         remove("/var/lock/start.vdr");
++     case 99: // Shutdown
 +         SystemExec("systemctl poweroff", true);
 +         break;
 +    }

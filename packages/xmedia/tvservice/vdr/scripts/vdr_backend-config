@@ -20,7 +20,7 @@ download_logos
   BVDR_ARGS="--no-kbd"
 
   if [ -d "$BVDR_VIDEO_DIR" ]; then
-      BVDR_ARGS="$BVDR_ARGS --video=\'$VDR_VIDEO_DIR\'"
+      BVDR_ARGS="$BVDR_ARGS --video=\'$BVDR_VIDEO_DIR\'"
   fi
 
   if [ "$BVDR_DEBUG" == "1" ]; then
