@@ -53,7 +53,6 @@ make_target() {
 makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
     cp $ROOT/$PKG_BUILD/retroarch $INSTALL/usr/bin
-    cp $PKG_DIR/scripts/* $INSTALL/usr/bin
   mkdir -p $INSTALL/usr/share/video_filters
     cp $ROOT/$PKG_BUILD/gfx/video_filters/*.so $INSTALL/usr/share/video_filters
     cp $ROOT/$PKG_BUILD/gfx/video_filters/*.filt $INSTALL/usr/share/video_filters

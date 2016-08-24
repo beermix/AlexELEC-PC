@@ -39,6 +39,8 @@ configure_target() {
 }
 
 post_makeinstall_target() {
+  mkdir -p $INSTALL/usr/bin
+    cp $PKG_DIR/scripts/* $INSTALL/usr/bin
   mkdir -p $INSTALL/usr/config/emulationstation
     cp $PKG_DIR/config/* $INSTALL/usr/config/emulationstation
 }

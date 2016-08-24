@@ -4,17 +4,11 @@
 #      Copyright (C) 2011-2016 Alexandr Zuyev (alex@alexelec.in.ua)
 ################################################################################
 
+. /etc/profile
+
 # RetroArch load BIOS
 BIOS_DIR="/storage/roms/bios"
 N64_DIR="/storage/roms/n64"
-
-# ping site
-ping_site () {
-  IS_SITE="false"
-  ping -4 -c 1 -W 1 alexelec.in.ua > /dev/null 2>&1
-  [ $? -eq 0 ] && IS_SITE="true"
-  echo $IS_SITE
-}
 
 # RetroArch load BIOS
 load_bios () {
