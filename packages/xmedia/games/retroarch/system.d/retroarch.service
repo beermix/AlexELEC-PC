@@ -1,5 +1,6 @@
 [Unit]
 Description=RetroArch emulator frontend
+ConditionPathExists=/var/lock/start.retro
 
 [Service]
 Environment=DISPLAY=:0.0
