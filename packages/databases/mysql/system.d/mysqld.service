@@ -1,7 +1,7 @@
 [Unit]
 Description=MySQL database server
 Before=kodi.service vdr.service
-ConditionPathExists=/storage/.cache/services/mysqld.conf
+ConditionPathExists=/storage/.cache/services/mysql.conf
 
 [Service]
 ExecStartPre=-/usr/bin/mysqld-bootstrap
