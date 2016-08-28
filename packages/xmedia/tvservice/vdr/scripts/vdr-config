@@ -55,6 +55,7 @@ SERVICE_DIR="/storage/.cache/services"
   [ "$VDR_WEATHER" == "1" ] && VDR_ARGS="$VDR_ARGS -P weatherforecast"
   [ "$VDR_SKIN_DESIGNER" == "1" ] && VDR_ARGS="$VDR_ARGS -P skindesigner"
   [ "$VDR_TVGUIDENG" == "1" -a "$VDR_SKIN_DESIGNER" == "1" ] && VDR_ARGS="$VDR_ARGS -P tvguideng"
+  [ "$VDR_ZAPHISTORY" == "1" ] && VDR_ARGS="$VDR_ARGS -P zaphistory"
 
   if [ "$VDR_LIVE" == "1" ]; then
       mkdir -p /storage/.cache/vdr/epgimages
