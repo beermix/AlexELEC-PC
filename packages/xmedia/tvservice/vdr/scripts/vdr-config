@@ -39,7 +39,7 @@ SERVICE_DIR="/storage/.cache/services"
 
   [ -z "$VDR_DVBAPI" ] && VDR_DVBAPI="1"
   [ "$VDR_DVBAPI" == "1" ] && VDR_ARGS="$VDR_ARGS -P'dvbapi -d'"
-  [ "$VDR_IPTV" == "1" ] && VDR_ARGS="$VDR_ARGS -P iptv"
+  [ "$VDR_IPTV" == "1" ] && VDR_ARGS="$VDR_ARGS -P 'iptv -d $VDR_IPTV_DEVICES'"
   [ "$VDR_SATIP" == "1" ] && VDR_ARGS="$VDR_ARGS -P satip"
   [ "$VDR_EPGSEARCH" == "1" ] && VDR_ARGS="$VDR_ARGS -P epgsearch"
   [ "$VDR_STREAMDEV_SERVER" == "1" ] && VDR_ARGS="$VDR_ARGS -P streamdev-server"
