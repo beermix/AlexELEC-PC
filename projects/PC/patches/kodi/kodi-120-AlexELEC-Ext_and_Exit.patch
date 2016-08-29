@@ -1,6 +1,6 @@
 diff -Naurp kodi-16.1-c6f6e0b/addons/resource.language.en_gb/resources/strings.po kodi-16.1-c6f6e0b-patch/addons/resource.language.en_gb/resources/strings.po
---- kodi-16.1-c6f6e0b/addons/resource.language.en_gb/resources/strings.po	2016-08-23 17:49:43.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/addons/resource.language.en_gb/resources/strings.po	2016-08-23 17:02:37.000000000 +0300
+--- kodi-16.1-c6f6e0b/addons/resource.language.en_gb/resources/strings.po	2016-08-29 09:01:12.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/addons/resource.language.en_gb/resources/strings.po	2016-08-29 08:59:59.000000000 +0300
 @@ -5459,7 +5459,7 @@ msgstr ""
  
  #: system/settings/settings.xml
@@ -11,8 +11,8 @@ diff -Naurp kodi-16.1-c6f6e0b/addons/resource.language.en_gb/resources/strings.p
  
  #: system/settings/settings.xml
 diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/Application.cpp
---- kodi-16.1-c6f6e0b/xbmc/Application.cpp	2016-08-23 17:49:43.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/xbmc/Application.cpp	2016-08-23 17:29:13.000000000 +0300
+--- kodi-16.1-c6f6e0b/xbmc/Application.cpp	2016-08-29 09:01:13.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/Application.cpp	2016-08-29 08:05:42.000000000 +0300
 @@ -225,6 +225,8 @@
  #include "pictures/GUIWindowSlideShow.h"
  #include "windows/GUIWindowLoginScreen.h"
@@ -80,7 +80,7 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
      break;
  
    case TMSG_SUSPEND:
-@@ -2925,10 +2962,63 @@ void CApplication::Stop(int exitCode)
+@@ -2925,6 +2962,39 @@ void CApplication::Stop(int exitCode)
  {
    try
    {
@@ -120,7 +120,11 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
      CVariant vExitCode(CVariant::VariantTypeObject);
      vExitCode["exitcode"] = m_ExitCode;
      CAnnouncementManager::GetInstance().Announce(System, "xbmc", "OnQuit", vExitCode);
+@@ -3046,6 +3116,26 @@ void CApplication::Stop(int exitCode)
+     av_lockmgr_register(NULL);
  
+     CLog::Log(LOGNOTICE, "stopped");
++
 +    // start VDR & Games
 +    if (m_ExitCode == EXITCODE_QUIT) // start VDR
 +    {
@@ -140,13 +144,12 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
 +        system("touch /var/lock/start.games");
 +        system("systemctl start emustation.service");
 +    }
-+
-     // Abort any active screensaver
-     WakeUpScreenSaverAndDPMS();
- 
+   }
+   catch (...)
+   {
 diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/FallbackPowerSyscall.h kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/FallbackPowerSyscall.h
 --- kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/FallbackPowerSyscall.h	2016-04-26 10:06:23.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/FallbackPowerSyscall.h	2016-08-23 17:36:51.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/FallbackPowerSyscall.h	2016-08-29 08:59:59.000000000 +0300
 @@ -27,12 +27,12 @@ class CFallbackPowerSyscall : public CPo
  public:
    virtual bool Powerdown() {return true; }
@@ -164,7 +167,7 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/FallbackPowerSyscall.h 
  };
 diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp
 --- kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp	2016-04-26 10:06:23.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp	2016-08-23 17:35:49.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp	2016-08-29 08:59:59.000000000 +0300
 @@ -128,7 +128,7 @@ bool CLogindUPowerSyscall::CanSuspend()
  
  bool CLogindUPowerSyscall::CanHibernate()
@@ -176,7 +179,7 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp
  bool CLogindUPowerSyscall::CanReboot()
 diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/PowerManager.cpp kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/PowerManager.cpp
 --- kodi-16.1-c6f6e0b/xbmc/powermanagement/PowerManager.cpp	2016-04-26 10:06:23.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/PowerManager.cpp	2016-08-23 17:40:45.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/PowerManager.cpp	2016-08-29 08:59:59.000000000 +0300
 @@ -190,7 +190,7 @@ bool CPowerManager::Suspend()
  
  bool CPowerManager::Hibernate()
@@ -214,8 +217,8 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/PowerManager.cpp kodi-16.1-c6
 +  list.push_back(make_pair(g_localizeStrings.Get(13010), POWERSTATE_HIBERNATE));
  }
 diff -Naurp kodi-16.1-c6f6e0b/xbmc/XBApplicationEx.h kodi-16.1-c6f6e0b-patch/xbmc/XBApplicationEx.h
---- kodi-16.1-c6f6e0b/xbmc/XBApplicationEx.h	2016-08-23 17:49:43.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/xbmc/XBApplicationEx.h	2016-08-23 17:41:18.000000000 +0300
+--- kodi-16.1-c6f6e0b/xbmc/XBApplicationEx.h	2016-08-29 09:01:12.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/XBApplicationEx.h	2016-08-29 08:59:59.000000000 +0300
 @@ -29,6 +29,7 @@ enum {
    EXITCODE_POWERDOWN = 64,
    EXITCODE_RESTARTAPP= 65,
