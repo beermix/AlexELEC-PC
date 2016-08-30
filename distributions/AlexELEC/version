@@ -1,9 +1,8 @@
 # VERSION: set full version
-  ALEXELEC_VERSION="7.0.0"
+  ALEXELEC_VERSION="7.0.1"
 
 # OS_VERSION: OS Version
   OS_VERSION="7.0"
 
 # ADDON_VERSION: Addon version
   ADDON_VERSION="7.0"
-
