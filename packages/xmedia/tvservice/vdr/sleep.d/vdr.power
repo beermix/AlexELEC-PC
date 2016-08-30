@@ -11,9 +11,8 @@ LOCK_DIR="/var/lock"
 
 case "$1" in
   pre)
-    if systemctl is-active "$SERVICE" &>/dev/null ; then
+    if [ -f "$LOCK_DIR/start.vdr" ] ; then
       progress "stoping $SERVICE ($1)..."
-      systemctl stop "$SERVICE"
       rm -f $LOCK_DIR/dvb-fw.load
     fi
     ;;
