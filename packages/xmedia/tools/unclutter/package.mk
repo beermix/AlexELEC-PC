@@ -1,19 +1,6 @@
 ################################################################################
-#      This file is part of LibreELEC - https://libreelec.tv
-#      Copyright (C) 2016 Team LibreELEC
-#
-#  LibreELEC is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  LibreELEC is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with LibreELEC.  If not, see <http://www.gnu.org/licenses/>.
+#      This file is part of Alex@ELEC - http://www.alexelec.in.ua
+#      Copyright (C) 2011-2016 Alexandr Zuyev (alex@alexelec.in.ua)
 ################################################################################
 
 PKG_NAME="unclutter"
@@ -28,7 +15,6 @@ PKG_PRIORITY="optional"
 PKG_SECTION="x11"
 PKG_SHORTDESC="Unclutter: Hide X11 Cursor"
 PKG_LONGDESC="Unclutter runs in the background of an X11 session and after a specified period of inactivity hides the cursor from display. When the cursor is moved its display is restored. Users may specify specific windows to be ignored by unclutter."
-
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
@@ -38,6 +24,10 @@ make_target() {
 }
 
 makeinstall_target() {
-  mkdir -p .install_pkg/usr/bin
-  install -m 755 unclutter .install_pkg/usr/bin/
+  mkdir -p $INSTALL/usr/bin
+    cp unclutter $INSTALL/usr/bin/
+}
+
+post_install() {
+  enable_service unclutter.service
 }
