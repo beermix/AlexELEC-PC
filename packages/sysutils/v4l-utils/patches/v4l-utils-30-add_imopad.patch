@@ -1,0 +1,12 @@
+diff -Naurp v4l-utils-1.8.1/utils/keytable/rc_maps.cfg v4l-utils-1.8.1-patch/utils/keytable/rc_maps.cfg
+--- v4l-utils-1.8.1/utils/keytable/rc_maps.cfg	2015-11-24 21:05:08.000000000 +0200
++++ v4l-utils-1.8.1-patch/utils/keytable/rc_maps.cfg	2015-11-24 21:11:20.000000000 +0200
+@@ -74,7 +74,7 @@
+ *	rc-genius-tvgo-a11mce    genius_tvgo_a11mce
+ *	rc-gotview7135           gotview7135
+ *	rc-hauppauge             hauppauge
+-*	rc-imon-mce              imon_mce
++*	rc-imon-mce              imon_pad
+ *	rc-imon-pad              imon_pad
+ *	rc-iodata-bctv7e         iodata_bctv7e
+ *	rc-it913x-v1             it913x_v1
