@@ -11,9 +11,6 @@ if [ -f /storage/.cache/services/lcdd.conf ]; then
     exit 0
   fi
 
-  LCDCONF=/etc/LCDd.conf
-  if [ -f /storage/.config/LCDd.conf ]; then
-    LCDCONF=/storage/.config/LCDd.conf
-  fi
+  LCDCONF="/storage/.config/lcdproc/LCDd.conf"
   exec /usr/sbin/LCDd -f -c $LCDCONF -d $LCD_DRIVER
 fi

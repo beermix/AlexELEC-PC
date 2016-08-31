@@ -34,7 +34,7 @@ for i in $LCD_DRIVER; do
 done
 unset IFS
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-libusb --enable-drivers=$LCD_DRIVER,!curses,!svga --enable-seamless-hbars"
+PKG_CONFIGURE_OPTS_TARGET="--enable-libusb --enable-drivers=$LCD_DRIVER,!curses,!svga --enable-seamless-hbars --enable-extra-charmaps"
 
 pre_make_target() {
   # dont build parallel
@@ -59,9 +59,12 @@ post_makeinstall_target() {
       -e "s|^#normal_font=.*$|normal_font=/usr/share/fonts/liberation/LiberationMono-Bold.ttf|" \
       -i $INSTALL/etc/LCDd.conf
 
-    mkdir -p $INSTALL/usr/lib/alexelec
-      cp $PKG_DIR/scripts/lcd-wrapper $INSTALL/usr/lib/alexelec
-
+    mkdir -p $INSTALL/usr/bin
+      cp $PKG_DIR/scripts/* $INSTALL/usr/bin
+    mkdir -p $INSTALL/usr/config/lcdproc
+      cp $PKG_DIR/config/*  $INSTALL/usr/config/lcdproc
+    mkdir -p $INSTALL/usr/share/lcdproc/fonts
+      cp $PKG_DIR/fonts/* $INSTALL/usr/share/lcdproc/fonts
 }
 
 post_install() {

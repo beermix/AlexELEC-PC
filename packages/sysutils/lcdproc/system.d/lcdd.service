@@ -1,14 +1,13 @@
 [Unit]
 Description=LCDProc
-ConditionPathExists=|/storage/.cache/services/lcdd.conf
+ConditionPathExists=/storage/.cache/services/lcdd.conf
 After=multi-user.target
 
 [Service]
-EnvironmentFile=-/storage/.cache/services/lcdd.conf
-ExecStart=/bin/sh -c 'exec /usr/lib/alexelec/lcd-wrapper'
+ExecStart=/usr/bin/lcdproc
 TimeoutStopSec=1s
 Restart=always
-RestartSec=5
+RestartSec=3
 StartLimitInterval=30
 StartLimitBurst=5
 
