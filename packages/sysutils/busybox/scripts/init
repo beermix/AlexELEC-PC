@@ -815,7 +815,7 @@
     CORE_VER=$(uname -r)
 
     case "$DVB_DRIVERS" in
-      "TBS")               # TBS drivers
+      "TBS")               # TBS drivers CrazyCat
           DRIVER="tbs"
        ;;
       "MEDIA")             # Media_Build drivers
@@ -823,6 +823,9 @@
        ;;
       "S2")                # S2-liplianin drivers
           DRIVER="s2"
+       ;;
+      "ALVES")             # TBS drivers (Luis Alves)
+          DRIVER="alves"
        ;;
       *)                   # Default Linux drivers CORE 
           DRIVER="core"

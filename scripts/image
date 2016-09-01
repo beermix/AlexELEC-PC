@@ -189,6 +189,13 @@ fi
     $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $MODVER-s2 2> /dev/null
   fi
 
+  # ljalves
+  if [ -d "$INSTALL/lib/modules/$MODVER-alves" ]; then
+    find $INSTALL/lib/modules/$MODVER-alves/ -name *.ko | \
+      sed -e "s,$INSTALL/lib/modules/$MODVER-alves/,," > $INSTALL/lib/modules/$MODVER-alves/modules.order
+    $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $MODVER-alves 2> /dev/null
+  fi
+
 # strip kernel modules
   for MOD in `find $INSTALL/lib/modules/ -type f -name *.ko`; do
     $STRIP --strip-debug $MOD
