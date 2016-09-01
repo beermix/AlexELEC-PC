@@ -1,0 +1,96 @@
+diff -Naurp s2-liplianin-v39.40/linux/drivers/media/pci/cx23885/cx23885-core.c s2-liplianin-v39.40-patch/linux/drivers/media/pci/cx23885/cx23885-core.c
+--- s2-liplianin-v39.40/linux/drivers/media/pci/cx23885/cx23885-core.c	2016-09-01 11:00:19.000000000 +0300
++++ s2-liplianin-v39.40-patch/linux/drivers/media/pci/cx23885/cx23885-core.c	2016-09-01 10:23:56.000000000 +0300
+@@ -2125,7 +2125,7 @@ static int cx23885_initdev(struct pci_de
+ 		(unsigned long long)pci_resource_start(pci_dev, 0));
+ 
+ 	pci_set_master(pci_dev);
+-	if (!pci_dma_supported(pci_dev, 0xffffffff)) {
++	if (!dma_supported(pci_dev == NULL ? NULL : &pci_dev->dev, 0xffffffff)) {
+ 		printk("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
+ 		err = -EIO;
+ 		goto fail_irq;
+diff -Naurp s2-liplianin-v39.40/linux/drivers/media/pci/cx25821/cx25821-core.c s2-liplianin-v39.40-patch/linux/drivers/media/pci/cx25821/cx25821-core.c
+--- s2-liplianin-v39.40/linux/drivers/media/pci/cx25821/cx25821-core.c	2015-11-03 14:23:04.000000000 +0200
++++ s2-liplianin-v39.40-patch/linux/drivers/media/pci/cx25821/cx25821-core.c	2016-09-01 10:24:41.000000000 +0300
+@@ -1403,7 +1403,7 @@ static int cx25821_initdev(struct pci_de
+ 		dev->pci_lat, (unsigned long long)dev->base_io_addr);
+ 
+ 	pci_set_master(pci_dev);
+-	if (!pci_dma_supported(pci_dev, 0xffffffff)) {
++	if (!dma_supported(pci_dev == NULL ? NULL : &pci_dev->dev, 0xffffffff)) {
+ 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
+ 		err = -EIO;
+ 		goto fail_irq;
+diff -Naurp s2-liplianin-v39.40/linux/drivers/media/pci/cx88/cx88-alsa.c s2-liplianin-v39.40-patch/linux/drivers/media/pci/cx88/cx88-alsa.c
+--- s2-liplianin-v39.40/linux/drivers/media/pci/cx88/cx88-alsa.c	2016-09-01 11:00:19.000000000 +0300
++++ s2-liplianin-v39.40-patch/linux/drivers/media/pci/cx88/cx88-alsa.c	2016-09-01 10:25:31.000000000 +0300
+@@ -817,7 +817,7 @@ static int snd_cx88_create(struct snd_ca
+ 		return err;
+ 	}
+ 
+-	if (!pci_dma_supported(pci,DMA_BIT_MASK(32))) {
++	if (!dma_supported(pci == NULL ? NULL : &pci->dev, DMA_BIT_MASK(32))) {
+ 		dprintk(0, "%s/1: Oops: no 32bit PCI DMA ???\n",core->name);
+ 		err = -EIO;
+ 		cx88_core_put(core, pci);
+diff -Naurp s2-liplianin-v39.40/linux/drivers/media/pci/cx88/cx88-mpeg.c s2-liplianin-v39.40-patch/linux/drivers/media/pci/cx88/cx88-mpeg.c
+--- s2-liplianin-v39.40/linux/drivers/media/pci/cx88/cx88-mpeg.c	2016-09-01 11:00:19.000000000 +0300
++++ s2-liplianin-v39.40-patch/linux/drivers/media/pci/cx88/cx88-mpeg.c	2016-09-01 10:26:18.000000000 +0300
+@@ -473,7 +473,7 @@ static int cx8802_init_common(struct cx8
+ 	if (pci_enable_device(dev->pci))
+ 		return -EIO;
+ 	pci_set_master(dev->pci);
+-	if (!pci_dma_supported(dev->pci,DMA_BIT_MASK(32))) {
++	if (!dma_supported(dev->pci == NULL ? NULL : &dev->pci->dev, DMA_BIT_MASK(32))) {
+ 		printk("%s/2: Oops: no 32bit PCI DMA ???\n",dev->core->name);
+ 		return -EIO;
+ 	}
+diff -Naurp s2-liplianin-v39.40/linux/drivers/media/pci/cx88/cx88-video.c s2-liplianin-v39.40-patch/linux/drivers/media/pci/cx88/cx88-video.c
+--- s2-liplianin-v39.40/linux/drivers/media/pci/cx88/cx88-video.c	2016-09-01 11:00:19.000000000 +0300
++++ s2-liplianin-v39.40-patch/linux/drivers/media/pci/cx88/cx88-video.c	2016-09-01 10:26:54.000000000 +0300
+@@ -1727,7 +1727,7 @@ static int cx8800_initdev(struct pci_dev
+ 	       dev->pci_lat,(unsigned long long)pci_resource_start(pci_dev,0));
+ 
+ 	pci_set_master(pci_dev);
+-	if (!pci_dma_supported(pci_dev,DMA_BIT_MASK(32))) {
++	if (!dma_supported(pci_dev == NULL ? NULL : &pci_dev->dev, DMA_BIT_MASK(32))) {
+ 		printk("%s/0: Oops: no 32bit PCI DMA ???\n",core->name);
+ 		err = -EIO;
+ 		goto fail_core;
+diff -Naurp s2-liplianin-v39.40/linux/drivers/media/pci/saa7134/saa7134-core.c s2-liplianin-v39.40-patch/linux/drivers/media/pci/saa7134/saa7134-core.c
+--- s2-liplianin-v39.40/linux/drivers/media/pci/saa7134/saa7134-core.c	2016-09-01 11:00:19.000000000 +0300
++++ s2-liplianin-v39.40-patch/linux/drivers/media/pci/saa7134/saa7134-core.c	2016-09-01 10:27:50.000000000 +0300
+@@ -936,7 +936,7 @@ static int saa7134_initdev(struct pci_de
+ 	       pci_name(pci_dev), dev->pci_rev, pci_dev->irq,
+ 	       dev->pci_lat,(unsigned long long)pci_resource_start(pci_dev,0));
+ 	pci_set_master(pci_dev);
+-	if (!pci_dma_supported(pci_dev, DMA_BIT_MASK(32))) {
++	if (!dma_supported(pci_dev == NULL ? NULL : &pci_dev->dev, DMA_BIT_MASK(32))) {
+ 		printk("%s: Oops: no 32bit PCI DMA ???\n",dev->name);
+ 		err = -EIO;
+ 		goto fail1;
+diff -Naurp s2-liplianin-v39.40/linux/drivers/media/pci/saa7164/saa7164-core.c s2-liplianin-v39.40-patch/linux/drivers/media/pci/saa7164/saa7164-core.c
+--- s2-liplianin-v39.40/linux/drivers/media/pci/saa7164/saa7164-core.c	2016-09-01 11:00:19.000000000 +0300
++++ s2-liplianin-v39.40-patch/linux/drivers/media/pci/saa7164/saa7164-core.c	2016-09-01 10:28:36.000000000 +0300
+@@ -1219,7 +1219,7 @@ static int saa7164_initdev(struct pci_de
+ 
+ 	pci_set_master(pci_dev);
+ 	/* TODO */
+-	if (!pci_dma_supported(pci_dev, 0xffffffff)) {
++	if (!dma_supported(pci_dev == NULL ? NULL : &pci_dev->dev, 0xffffffff)) {
+ 		printk("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
+ 		err = -EIO;
+ 		goto fail_irq;
+diff -Naurp s2-liplianin-v39.40/linux/drivers/media/v4l2-core/v4l2-compat-ioctl32.c s2-liplianin-v39.40-patch/linux/drivers/media/v4l2-core/v4l2-compat-ioctl32.c
+--- s2-liplianin-v39.40/linux/drivers/media/v4l2-core/v4l2-compat-ioctl32.c	2015-11-03 14:23:04.000000000 +0200
++++ s2-liplianin-v39.40-patch/linux/drivers/media/v4l2-core/v4l2-compat-ioctl32.c	2016-09-01 10:07:25.000000000 +0300
+@@ -733,7 +733,7 @@ static int put_v4l2_event32(struct v4l2_
+ 		copy_to_user(&up->u, &kp->u, sizeof(kp->u)) ||
+ 		put_user(kp->pending, &up->pending) ||
+ 		put_user(kp->sequence, &up->sequence) ||
+-		put_compat_timespec(&kp->timestamp, &up->timestamp) ||
++		compat_put_timespec(&kp->timestamp, &up->timestamp) ||
+ 		put_user(kp->id, &up->id) ||
+ 		copy_to_user(up->reserved, kp->reserved, 8 * sizeof(__u32)))
+ 			return -EFAULT;

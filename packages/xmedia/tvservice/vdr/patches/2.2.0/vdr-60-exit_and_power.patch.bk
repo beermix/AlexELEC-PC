@@ -287,6 +287,15 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
            default: break;
            }
          Interact = Menu ? Menu : cControl::Control(); // might have been closed in the mean time
+@@ -1492,7 +1566,7 @@ Exit:
+      Setup.CurrentVolume  = cDevice::CurrentVolume();
+      Setup.Save();
+      }
+-  cDevice::Shutdown();
++  //cDevice::Shutdown();
+   cPositioner::DestroyPositioner();
+   cVideoDirectory::Destroy();
+   EpgHandlers.Clear();
 @@ -1510,5 +1584,40 @@ Exit:
       closelog();
    if (HasStdin)

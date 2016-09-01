@@ -821,6 +821,9 @@
       "MEDIA")             # Media_Build drivers
           DRIVER="mb"
        ;;
+      "S2")                # S2-liplianin drivers
+          DRIVER="s2"
+       ;;
       *)                   # Default Linux drivers CORE 
           DRIVER="core"
        ;;
