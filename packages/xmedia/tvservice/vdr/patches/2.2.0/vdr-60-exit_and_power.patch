@@ -172,9 +172,25 @@ diff -Naurp vdr-2.2.0/shutdown.c vdr-2.2.0-patch/shutdown.c
    if (RecordingsHandler.Active()) {
       if (!Interactive || !Interface->Confirm(tr("Editing - shut down anyway?")))
          return false;
+diff -Naurp vdr-2.2.0/thread.c vdr-2.2.0-patch/thread.c
+--- vdr-2.2.0/thread.c	2013-12-29 17:26:33.000000000 +0200
++++ vdr-2.2.0-patch/thread.c	2016-09-01 15:35:38.000000000 +0300
+@@ -562,7 +562,11 @@ int SystemExec(const char *Command, bool
+ 
+   if ((pid = fork()) < 0) { // fork failed
+      LOG_ERROR;
+-     return -1;
++     cCondWait::SleepMs(100);
++     if ((pid = fork()) < 0) {
++        LOG_ERROR;
++        return -1;
++        }
+      }
+ 
+   if (pid > 0) { // parent process
 diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
 --- vdr-2.2.0/vdr.c	2016-08-31 18:12:37.000000000 +0300
-+++ vdr-2.2.0-patch/vdr.c	2016-09-01 14:17:12.000000000 +0300
++++ vdr-2.2.0-patch/vdr.c	2016-09-01 15:26:30.000000000 +0300
 @@ -72,12 +72,15 @@
  #include "videodir.h"
  #include "status.h"
