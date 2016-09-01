@@ -174,7 +174,7 @@ diff -Naurp vdr-2.2.0/shutdown.c vdr-2.2.0-patch/shutdown.c
          return false;
 diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
 --- vdr-2.2.0/vdr.c	2016-08-31 18:12:37.000000000 +0300
-+++ vdr-2.2.0-patch/vdr.c	2016-08-31 18:15:48.000000000 +0300
++++ vdr-2.2.0-patch/vdr.c	2016-09-01 14:17:12.000000000 +0300
 @@ -72,12 +72,15 @@
  #include "videodir.h"
  #include "status.h"
@@ -312,7 +312,7 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
 +         break;
 +     case 97: // Sleep
 +         esyslog("VDR frontend Suspend!!!");
-+         SystemExec("systemctl suspend", true);
++         SystemExec("systemctl suspend", false);
 +         break;
 +     case 98: // Reboot
 +         remove("/var/lock/start.vdr");
