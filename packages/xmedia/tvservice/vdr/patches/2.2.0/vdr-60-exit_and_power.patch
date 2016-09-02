@@ -24,18 +24,8 @@ diff -Naurp vdr-2.2.0/keys.h vdr-2.2.0-patch/keys.h
               kChanPrev,
 diff -Naurp vdr-2.2.0/menu.c vdr-2.2.0-patch/menu.c
 --- vdr-2.2.0/menu.c	2016-08-31 18:12:37.000000000 +0300
-+++ vdr-2.2.0-patch/menu.c	2016-08-31 18:11:50.000000000 +0300
-@@ -33,6 +33,9 @@
- #include "transfer.h"
- #include "videodir.h"
- 
-+#include <fstream>
-+#include <algorithm>
-+
- #include "remotetimers.h"
- 
- #define MAXWAIT4EPGINFO   3 // seconds
-@@ -2010,28 +2013,57 @@ eOSState cMenuCommands::Execute(void)
++++ vdr-2.2.0-patch/menu.c	2016-09-02 07:52:43.000000000 +0300
+@@ -2010,28 +2010,39 @@ eOSState cMenuCommands::Execute(void)
                cmdbuf = cString::sprintf("%s %s", *command, *parameters);
             const char *cmd = *cmdbuf ? *cmdbuf : *command;
             dsyslog("executing command '%s'", cmd);
@@ -59,25 +49,7 @@ diff -Naurp vdr-2.2.0/menu.c vdr-2.2.0-patch/menu.c
 -              p.Close();
 -              }
 +           if (strcmp(cmd, "exit") == 0)
-+           {
-+               std::ifstream isBackVDR, isBackTVH;
-+               isBackVDR.open("/storage/.cache/services/vdr-backend.conf");
-+               isBackTVH.open("/storage/.cache/services/tvheadend.conf");
-+               if (!isBackVDR.good() && !isBackTVH.good())
-+               {
-+                  cDevice::PrimaryDevice()->ToggleMute();
-+                  esyslog("VDR frontend fast stopping...");
-+                  remove("/var/lock/start.vdr");
-+                  system("touch /var/lock/start.kodi");
-+                  SystemExec("systemctl start kodi.service", true);
-+                  system("touch /var/lock/exit-fast.vdr");
-+               }
-+               else
-+                  esyslog("VDR frontend normal stopping...");
-+               isBackVDR.close();
-+               isBackTVH.close();
 +               ShutdownHandler.Exit(0);
-+           }
 +           else if (strcmp(cmd, "sleep") == 0)
 +               ShutdownHandler.Exit(97);
 +           else if (strcmp(cmd, "sysreboot") == 0)
@@ -190,15 +162,8 @@ diff -Naurp vdr-2.2.0/thread.c vdr-2.2.0-patch/thread.c
    if (pid > 0) { // parent process
 diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
 --- vdr-2.2.0/vdr.c	2016-08-31 18:12:37.000000000 +0300
-+++ vdr-2.2.0-patch/vdr.c	2016-09-01 15:26:30.000000000 +0300
-@@ -72,12 +72,15 @@
- #include "videodir.h"
- #include "status.h"
- 
-+#include <fstream>
-+#include <algorithm>
-+
- #define MINCHANNELWAIT        10 // seconds to wait between failed channel switchings
++++ vdr-2.2.0-patch/vdr.c	2016-09-02 08:17:41.000000000 +0300
+@@ -76,8 +76,8 @@
  #define ACTIVITYTIMEOUT       60 // seconds before starting housekeeping
  #define SHUTDOWNWAIT         300 // seconds to wait in user prompt before automatic shutdown
  #define SHUTDOWNRETRY        360 // seconds before trying again to shut down
@@ -209,16 +174,7 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
  #define RESTARTCANCELPROMPT    5 // seconds to wait in user prompt before restarting on SIGHUP
  #define MANUALSTART          600 // seconds the next timer must be in the future to assume manual start
  #define CHANNELSAVEDELTA     120 // seconds before saving channels.conf after automatic modifications
-@@ -93,6 +96,8 @@
- 
- static int LastSignal = 0;
- 
-+std::ifstream isVDR, isTVH, isFast;
-+
- static bool SetUser(const char *UserName, bool UserDump)
- {
-   if (UserName) {
-@@ -1262,7 +1267,7 @@ int main(int argc, char *argv[])
+@@ -1262,7 +1262,7 @@ int main(int argc, char *argv[])
                 isyslog("Power button pressed");
                 DELETE_MENU;
                 // Check for activity, request power button again if active:
@@ -227,7 +183,7 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
                    // Not pressed power - set VDR to be non-interactive and power down later:
                    ShutdownHandler.SetUserInactive();
                    break;
-@@ -1284,6 +1289,75 @@ int main(int argc, char *argv[])
+@@ -1284,6 +1284,60 @@ int main(int argc, char *argv[])
                 // Do not attempt to automatically shut down for a while:
                 ShutdownHandler.SetRetry(SHUTDOWNRETRY);
                 break;
@@ -252,21 +208,6 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
 +                  // If final question was canceled, continue to be active:
 +                  break;
 +               // Ok, now call the exit script:
-+               isVDR.open("/storage/.cache/services/vdr-backend.conf");
-+               isTVH.open("/storage/.cache/services/tvheadend.conf");
-+               if (!isVDR.good() && !isTVH.good())
-+               {
-+                  cDevice::PrimaryDevice()->ToggleMute();
-+                  esyslog("VDR frontend fast stopping...");
-+                  remove("/var/lock/start.vdr");
-+                  system("touch /var/lock/start.kodi");
-+                  SystemExec("systemctl start kodi.service", true);
-+                  system("touch /var/lock/exit-fast.vdr");
-+               }
-+               else
-+                  esyslog("VDR frontend normal stopping...");
-+               isVDR.close();
-+               isTVH.close();
 +               EXIT(0);
 +               // Set VDR to be non-interactive and exit down again later:
 +               ShutdownHandler.SetUserInactive();
@@ -303,7 +244,7 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
            default: break;
            }
          Interact = Menu ? Menu : cControl::Control(); // might have been closed in the mean time
-@@ -1510,5 +1584,40 @@ Exit:
+@@ -1510,5 +1564,30 @@ Exit:
       closelog();
    if (HasStdin)
       tcsetattr(STDIN_FILENO, TCSANOW, &savedTm);
@@ -311,20 +252,10 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
 +  // EXIT code
 +  switch(ShutdownHandler.GetExitCode()) {
 +     case 0: // Exit to Kodi
-+         isFast.open("/var/lock/exit-fast.vdr");
-+         if (isFast.good())
-+         {
-+            remove("/var/lock/exit-fast.vdr");
-+            esyslog("VDR frontend fast exit!!!");
-+         }
-+         else
-+         {
-+            esyslog("VDR frontend normal exit!!!");
-+            remove("/var/lock/start.vdr");
-+            system("touch /var/lock/start.kodi");
-+            SystemExec("systemctl start kodi.service", true);
-+         }
-+         isFast.close();
++         esyslog("VDR frontend Exit!!!");
++         remove("/var/lock/start.vdr");
++         system("touch /var/lock/start.kodi");
++         SystemExec("systemctl start kodi.service", false);
 +         break;
 +     case 97: // Sleep
 +         esyslog("VDR frontend Suspend!!!");
