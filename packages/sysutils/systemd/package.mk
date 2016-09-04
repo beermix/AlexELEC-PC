@@ -185,6 +185,9 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
   cp $PKG_DIR/scripts/systemd-machine-id-setup $INSTALL/usr/bin
 
+  # tune systemd-tmpfiles-setup-dev.service
+  sed -e "s,^After=.*$,After=systemd-sysusers.service systemd-journald.service,g" -i $INSTALL/usr/lib/systemd/system/systemd-tmpfiles-setup-dev.service
+
   # provide 'halt', 'shutdown', 'reboot' & co.
   mkdir -p $INSTALL/usr/sbin
   ln -sf /usr/bin/systemctl $INSTALL/usr/sbin/halt

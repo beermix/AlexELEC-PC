@@ -411,6 +411,11 @@ post_makeinstall_target() {
     cp -R $PKG_DIR/config/weather.yahoo $INSTALL/usr/share/kodi/config
   fi
 
+  # disable Wizard in System addon
+  if [ -d $PKG_DIR/config/service.system.settings ]; then
+    cp -R $PKG_DIR/config/service.system.settings $INSTALL/usr/share/kodi/config
+  fi
+  
   debug_strip $INSTALL/usr/lib/kodi/kodi.bin
 }
 
