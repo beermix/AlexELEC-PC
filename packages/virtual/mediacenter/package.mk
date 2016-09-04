@@ -30,8 +30,8 @@ done
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pycrypto"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xmlstarlet"
 
-# other packages
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET AlexELEC-settings"
+# system settings addons
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET System-settings AlexELEC-settings"
 
   if [ "$KODI_LANGUAGE_ADDONS" = "yes" ]; then
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kodi-language-addons"

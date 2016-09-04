@@ -4,7 +4,6 @@
 ################################################################################
 
 PKG_NAME="connman"
-# DO NOT UPGRADE!!
 PKG_VERSION="1.31"
 PKG_REV="1"
 PKG_ARCH="any"

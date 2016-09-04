@@ -27,9 +27,9 @@ get_target() {
   done
 }
 
-if [ -f /storage/.cache/reset_ae ] ; then
+if [ -f /storage/.cache/reset_oe ] ; then
   # hard reset
-  rm -f /storage/.cache/reset_ae
+  rm -f /storage/.cache/reset_oe
   get_target
   if [ ! -z $target ] ; then
     echo "hard resetting..."
@@ -44,9 +44,9 @@ if [ -f /storage/.cache/reset_ae ] ; then
     echo "done"
     sleep 5
   fi
-elif [ -f /storage/.cache/reset_kodi ] ; then
+elif [ -f /storage/.cache/reset_xbmc ] ; then
   # soft reset
-  rm -f /storage/.cache/reset_kodi
+  rm -f /storage/.cache/reset_xbmc
   get_target
   if [ ! -z $target ] ; then
     echo "soft resetting..."
