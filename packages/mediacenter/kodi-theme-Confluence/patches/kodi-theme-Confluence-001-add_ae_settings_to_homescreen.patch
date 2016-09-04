@@ -34,7 +34,7 @@ diff -Naurp kodi-theme-Confluence-16.1-c327c53/language/resource.language.en_gb/
 +msgstr ""
 diff -Naurp kodi-theme-Confluence-16.1-c327c53/language/resource.language.ru_ru/strings.po kodi-theme-Confluence-16.1-c327c53-patch/language/resource.language.ru_ru/strings.po
 --- kodi-theme-Confluence-16.1-c327c53/language/resource.language.ru_ru/strings.po	2016-04-25 06:10:36.000000000 +0300
-+++ kodi-theme-Confluence-16.1-c327c53-patch/language/resource.language.ru_ru/strings.po	2016-09-04 09:59:48.000000000 +0300
++++ kodi-theme-Confluence-16.1-c327c53-patch/language/resource.language.ru_ru/strings.po	2016-09-04 10:28:13.000000000 +0300
 @@ -603,3 +603,11 @@ msgstr "СИСТЕМА"
  msgctxt "#31960"
  msgid "RADIO"
@@ -45,5 +45,5 @@ diff -Naurp kodi-theme-Confluence-16.1-c327c53/language/resource.language.ru_ru/
 +msgstr "Системные"
 +
 +msgctxt "#31962"
-+msgid "Расширенные"
-+msgstr ""
++msgid "Advanced"
++msgstr "Расширенные"
