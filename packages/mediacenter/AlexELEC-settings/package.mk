@@ -4,7 +4,7 @@
 ################################################################################
 
 PKG_NAME="AlexELEC-settings"
-PKG_VERSION="3e43a5d"
+PKG_VERSION="179a49e"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="prop."

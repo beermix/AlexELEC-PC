@@ -18,11 +18,6 @@ PKG_LONGDESC="This is a small LIRC-compatible daemon that reads from /dev/input/
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-pre_build_target() {
-  sed s%/usr/include/linux/input.h%$SYSROOT_PREFIX/usr/include/linux/input.h%g -i $ROOT/$PKG_BUILD/Makefile
-  sed s%/usr/include/linux/input.h%linux/input.h%g -i $ROOT/$PKG_BUILD/inputlircd.c
-}
-
 make_target() {
   make PREFIX=/usr
 }
@@ -30,7 +25,7 @@ make_target() {
 makeinstall_target() {
   make DESTDIR=$INSTALL PREFIX=/usr install-sbin
   mkdir -p $INSTALL/usr/bin
-    cp $PKG_DIR/bin/* $INSTALL/usr/bin
+    cp $PKG_DIR/scripts/* $INSTALL/usr/bin
 }
 
 post_install() {

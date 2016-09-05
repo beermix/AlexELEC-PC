@@ -14,10 +14,11 @@ SERVICE_DIR="/storage/.cache/services"
 [ -f "$SERVICE_DIR/locale.conf" ] && . $SERVICE_DIR/locale.conf
 [ -z "$SYS_LOCALE" ] && SYS_LOCALE="ru_RU.UTF-8"
 
+  VDR_ARGS="--lirc=/run/lirc/lircd"
   if [ "$VDR_DEBUG" == "1" ]; then
-      VDR_ARGS="--log=3"
+      VDR_ARGS="$VDR_ARGS --log=3"
   else
-      VDR_ARGS="--log=1"
+      VDR_ARGS="$VDR_ARGS --log=1"
   fi
 
   if [ -d "$VDR_VIDEO_DIR" ]; then
