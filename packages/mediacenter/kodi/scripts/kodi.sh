@@ -98,5 +98,4 @@ if [ $(( ($RET >= 131 && $RET <= 136) || $RET == 139 )) = "1" ] ; then
   rm -f $(ls -1t $CRASHLOG_DIR/kodi_crashlog_*.log | tail -n +11)
 fi
 
-clear_ram
 exit $RET

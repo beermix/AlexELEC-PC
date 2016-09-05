@@ -132,7 +132,7 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
 +      isStartVDR.open("/storage/.cache/services/vdr.conf");
 +      if(isStartVDR.good())
 +      {
-+        remove("/var/lock/start.kodi");
++        system("rm -f /var/lock/start.kodi");
 +        system("touch /var/lock/start.vdr");
 +        system("systemctl start vdr.service");
 +      }
@@ -140,7 +140,7 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
 +    }
 +    else if (m_ExitCode == EXITCODE_GAMES) // start Games
 +    {
-+        remove("/var/lock/start.kodi");
++        system("rm -f /var/lock/start.kodi");
 +        system("touch /var/lock/start.games");
 +        system("systemctl start emustation.service");
 +    }

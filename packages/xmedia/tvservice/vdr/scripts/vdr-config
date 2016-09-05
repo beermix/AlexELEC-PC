@@ -76,4 +76,5 @@ load_firmware
 echo "SYS_LOCALE=\"$SYS_LOCALE\"" > /run/alexelec/vdr.conf
 echo "VDR_ARGS=\"$VDR_ARGS\"" >> /run/alexelec/vdr.conf
 
+clear_ram
 exit 0

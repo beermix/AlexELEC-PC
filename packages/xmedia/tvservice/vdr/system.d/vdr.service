@@ -10,10 +10,11 @@ Environment=DISPLAY=:0.0
 ExecStartPre=-/usr/bin/vdr-config
 ExecStartPre=-/usr/bin/camd start VDR-Frontend
 ExecStart=/bin/sh -c "eval LANG=$SYS_LOCALE exec vdr $VDR_ARGS"
-ExecStop=/bin/kill -TERM $MAINPID
 ExecStopPost=/usr/bin/camd stop VDR-Frontend
+ExecStopPost=/usr/bin/vdr-stop
+SuccessExitStatus=97 98 99
 TimeoutStopSec=5
-Restart=always
+Restart=on-failure
 RestartSec=2
 StartLimitInterval=0
 

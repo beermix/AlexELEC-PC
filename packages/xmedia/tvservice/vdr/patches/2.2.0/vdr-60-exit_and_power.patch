@@ -1,6 +1,6 @@
 diff -Naurp vdr-2.2.0/keys.c vdr-2.2.0-patch/keys.c
 --- vdr-2.2.0/keys.c	2012-12-04 14:52:52.000000000 +0200
-+++ vdr-2.2.0-patch/keys.c	2016-08-31 18:11:50.000000000 +0300
++++ vdr-2.2.0-patch/keys.c	2016-09-04 15:43:48.000000000 +0300
 @@ -43,6 +43,8 @@ static tKey keyTable[] = { // "Up" and "
                      { kNext,          trNOOP("Key$Next")        },
                      { kPrev,          trNOOP("Key$Prev")        },
@@ -12,7 +12,7 @@ diff -Naurp vdr-2.2.0/keys.c vdr-2.2.0-patch/keys.c
                      { kChanPrev,      trNOOP("Key$PrevChannel") },
 diff -Naurp vdr-2.2.0/keys.h vdr-2.2.0-patch/keys.h
 --- vdr-2.2.0/keys.h	2015-01-27 12:45:18.000000000 +0200
-+++ vdr-2.2.0-patch/keys.h	2016-08-31 18:11:50.000000000 +0300
++++ vdr-2.2.0-patch/keys.h	2016-09-04 15:43:48.000000000 +0300
 @@ -37,6 +37,8 @@ enum eKeys { // "Up" and "Down" must be
               kNext,
               kPrev,
@@ -23,9 +23,9 @@ diff -Naurp vdr-2.2.0/keys.h vdr-2.2.0-patch/keys.h
               kChanDn,
               kChanPrev,
 diff -Naurp vdr-2.2.0/menu.c vdr-2.2.0-patch/menu.c
---- vdr-2.2.0/menu.c	2016-08-31 18:12:37.000000000 +0300
-+++ vdr-2.2.0-patch/menu.c	2016-09-02 07:52:43.000000000 +0300
-@@ -2010,28 +2010,39 @@ eOSState cMenuCommands::Execute(void)
+--- vdr-2.2.0/menu.c	2016-09-04 15:45:23.000000000 +0300
++++ vdr-2.2.0-patch/menu.c	2016-09-04 15:12:24.000000000 +0300
+@@ -2010,28 +2010,59 @@ eOSState cMenuCommands::Execute(void)
                cmdbuf = cString::sprintf("%s %s", *command, *parameters);
             const char *cmd = *cmdbuf ? *cmdbuf : *command;
             dsyslog("executing command '%s'", cmd);
@@ -49,13 +49,33 @@ diff -Naurp vdr-2.2.0/menu.c vdr-2.2.0-patch/menu.c
 -              p.Close();
 -              }
 +           if (strcmp(cmd, "exit") == 0)
++           {
++               remove("/var/lock/start.vdr");
++               system("touch /var/lock/start.kodi");
++               esyslog("VDR frontend command: Exit");
 +               ShutdownHandler.Exit(0);
++           }
 +           else if (strcmp(cmd, "sleep") == 0)
++           {
++               remove("/var/lock/start.vdr");
++               system("touch /var/lock/sleep.vdr");
++               esyslog("VDR frontend command: Sleep");
 +               ShutdownHandler.Exit(97);
++           }
 +           else if (strcmp(cmd, "sysreboot") == 0)
++           {
++               remove("/var/lock/start.vdr");
++               system("touch /var/lock/reboot.vdr");
++               esyslog("VDR frontend command: Reboot");
 +               ShutdownHandler.Exit(98);
++           }
 +           else if (strcmp(cmd, "syspower") == 0)
++           {
++               remove("/var/lock/start.vdr");
++               system("touch /var/lock/power.vdr");
++               esyslog("VDR frontend command: Powerof");
 +               ShutdownHandler.Exit(99);
++           }
             else
 -              esyslog("ERROR: can't open pipe for command '%s'", cmd);
 -           Skins.Message(mtStatus, NULL);
@@ -87,8 +107,8 @@ diff -Naurp vdr-2.2.0/menu.c vdr-2.2.0-patch/menu.c
                return AddSubMenu(new cMenuText(title, result, fontFix));
             return osEnd;
 diff -Naurp vdr-2.2.0/po/ru_RU.po vdr-2.2.0-patch/po/ru_RU.po
---- vdr-2.2.0/po/ru_RU.po	2016-08-31 18:12:36.000000000 +0300
-+++ vdr-2.2.0-patch/po/ru_RU.po	2016-08-31 18:11:50.000000000 +0300
+--- vdr-2.2.0/po/ru_RU.po	2016-09-04 15:45:23.000000000 +0300
++++ vdr-2.2.0-patch/po/ru_RU.po	2016-09-04 15:43:48.000000000 +0300
 @@ -1537,12 +1537,24 @@ msgstr "Остановить live video?"
  msgid "Recording started"
  msgstr "Запись начата"
@@ -118,7 +138,7 @@ diff -Naurp vdr-2.2.0/po/ru_RU.po vdr-2.2.0-patch/po/ru_RU.po
  
 diff -Naurp vdr-2.2.0/shutdown.c vdr-2.2.0-patch/shutdown.c
 --- vdr-2.2.0/shutdown.c	2013-10-02 12:02:01.000000000 +0300
-+++ vdr-2.2.0-patch/shutdown.c	2016-08-31 17:41:54.000000000 +0300
++++ vdr-2.2.0-patch/shutdown.c	2016-09-04 15:43:48.000000000 +0300
 @@ -130,9 +130,10 @@ void cShutdownHandler::SetShutdownComman
  void cShutdownHandler::CallShutdownCommand(time_t WakeupTime, int Channel, const char *File, bool UserShutdown)
  {
@@ -146,7 +166,7 @@ diff -Naurp vdr-2.2.0/shutdown.c vdr-2.2.0-patch/shutdown.c
          return false;
 diff -Naurp vdr-2.2.0/thread.c vdr-2.2.0-patch/thread.c
 --- vdr-2.2.0/thread.c	2013-12-29 17:26:33.000000000 +0200
-+++ vdr-2.2.0-patch/thread.c	2016-09-01 15:35:38.000000000 +0300
++++ vdr-2.2.0-patch/thread.c	2016-09-04 15:43:48.000000000 +0300
 @@ -562,7 +562,11 @@ int SystemExec(const char *Command, bool
  
    if ((pid = fork()) < 0) { // fork failed
@@ -161,8 +181,8 @@ diff -Naurp vdr-2.2.0/thread.c vdr-2.2.0-patch/thread.c
  
    if (pid > 0) { // parent process
 diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
---- vdr-2.2.0/vdr.c	2016-08-31 18:12:37.000000000 +0300
-+++ vdr-2.2.0-patch/vdr.c	2016-09-02 08:17:41.000000000 +0300
+--- vdr-2.2.0/vdr.c	2016-09-04 15:45:23.000000000 +0300
++++ vdr-2.2.0-patch/vdr.c	2016-09-05 08:46:47.000000000 +0300
 @@ -76,8 +76,8 @@
  #define ACTIVITYTIMEOUT       60 // seconds before starting housekeeping
  #define SHUTDOWNWAIT         300 // seconds to wait in user prompt before automatic shutdown
@@ -183,7 +203,7 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
                    // Not pressed power - set VDR to be non-interactive and power down later:
                    ShutdownHandler.SetUserInactive();
                    break;
-@@ -1284,6 +1284,60 @@ int main(int argc, char *argv[])
+@@ -1284,6 +1284,66 @@ int main(int argc, char *argv[])
                 // Do not attempt to automatically shut down for a while:
                 ShutdownHandler.SetRetry(SHUTDOWNRETRY);
                 break;
@@ -208,6 +228,9 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
 +                  // If final question was canceled, continue to be active:
 +                  break;
 +               // Ok, now call the exit script:
++               remove("/var/lock/start.vdr");
++               system("touch /var/lock/start.kodi");
++               esyslog("VDR frontend key command: Exit");
 +               EXIT(0);
 +               // Set VDR to be non-interactive and exit down again later:
 +               ShutdownHandler.SetUserInactive();
@@ -235,6 +258,9 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
 +                  // If final question was canceled, continue to be active:
 +                  break;
 +               // Ok, now call the sleep script:
++               remove("/var/lock/start.vdr");
++               system("touch /var/lock/sleep.vdr");
++               esyslog("VDR frontend key command: Sleep");
 +               EXIT(97);
 +               // Set VDR to be non-interactive and sleep again later:
 +               ShutdownHandler.SetUserInactive();
@@ -244,34 +270,31 @@ diff -Naurp vdr-2.2.0/vdr.c vdr-2.2.0-patch/vdr.c
            default: break;
            }
          Interact = Menu ? Menu : cControl::Control(); // might have been closed in the mean time
-@@ -1510,5 +1564,30 @@ Exit:
+@@ -1510,5 +1570,27 @@ Exit:
       closelog();
    if (HasStdin)
       tcsetattr(STDIN_FILENO, TCSANOW, &savedTm);
 +
-+  // EXIT code
++  // Success EXIT code
 +  switch(ShutdownHandler.GetExitCode()) {
 +     case 0: // Exit to Kodi
-+         esyslog("VDR frontend Exit!!!");
-+         remove("/var/lock/start.vdr");
-+         system("touch /var/lock/start.kodi");
++         esyslog("VDR frontend normal Exit!!!");
 +         SystemExec("systemctl start kodi.service", false);
 +         break;
 +     case 97: // Sleep
-+         esyslog("VDR frontend Suspend!!!");
++         esyslog("VDR frontend normal Suspend!!!");
 +         SystemExec("systemctl suspend", false);
 +         break;
 +     case 98: // Reboot
-+         remove("/var/lock/start.vdr");
-+         esyslog("VDR frontend Reboot!!!");
++         esyslog("VDR frontend normal Reboot!!!");
 +         SystemExec("systemctl reboot", false);
 +         break;
 +     case 99: // Shutdown
-+         remove("/var/lock/start.vdr");
-+         esyslog("VDR frontend PowerOff!!!");
++         esyslog("VDR frontend normal PowerOff!!!");
 +         SystemExec("systemctl poweroff", false);
 +         break;
 +    }
++   system("touch /var/lock/success.vdr");
 +
    return ShutdownHandler.GetExitCode();
  }
