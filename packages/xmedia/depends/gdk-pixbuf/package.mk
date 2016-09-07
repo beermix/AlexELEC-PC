@@ -31,7 +31,5 @@ PKG_CONFIGURE_OPTS_TARGET="gio_can_sniff=yes \
             --with-libjasper"
 
 post_makeinstall_target() {
-  #mkdir -p $INSTALL/etc/gdk_pixbuf-2.0
-  #  cp $PKG_DIR/config/gdk-pixbuf.loaders $INSTALL/etc/gdk_pixbuf-2.0
   cp $PKG_DIR/config/loaders.cache $INSTALL/usr/lib/gdk-pixbuf-2.0/2.10.0/
 }

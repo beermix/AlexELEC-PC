@@ -1,6 +1,6 @@
 ################################################################################
-#      This file is part of Alex@ELEC - http://www.alexelec.ru
-#      Copyright (C) 2011-2016 Alexandr Zuyev (alex@alexelec.ru)
+#      This file is part of Alex@ELEC - http://www.alexelec.in.ua
+#      Copyright (C) 2011-2016 Alexandr Zuyev (alex@alexelec.in.ua)
 ################################################################################
 
 PKG_NAME="vdr-all"
@@ -8,7 +8,7 @@ PKG_VERSION="2.2.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.alexelec.ru"
+PKG_SITE="http://www.alexelec.in.ua"
 PKG_URL=""
 PKG_DEPENDS_TARGET="toolchain vdr"
 PKG_PRIORITY="optional"

@@ -19,7 +19,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 # tools
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mc scan-s2 inputlirc unclutter"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mc scan-s2 inputlirc unclutter xdotool"
 
 # vnc
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET x11vnc"
@@ -40,6 +40,9 @@ PKG_AUTORECONF="no"
 
 # dlna
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET minidlna"
+
+# browser
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET install-chromium"
 
 # dvb drivers
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET media_build"
