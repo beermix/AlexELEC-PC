@@ -16,6 +16,16 @@ if [ -f "$ADDON_HOME/settings.xml" ]; then
 else
   CHROME_HARDWARE="true"
   CHROME_WINDOW="maximized"
+  CHROME_EXIT="false"
+fi
+
+# stop kodi
+if [ "$CHROME_EXIT" == "false" ]; then
+  systemctl stop kodi.service
+else
+  if [ "$CHROME_SOUND" == "true" ]; then
+      kodi-send --action="RunScript(/usr/bin/sound-kodi.py, pause)"
+  fi
 fi
 
 ################################################################################
@@ -90,10 +100,18 @@ LD_PRELOAD=/usr/lib/libGL.so LANG=$SYS_LOCALE $CHROME_DIR/chromium.bin \
 logger -t chromium "Chromium stop..."
 
 # disable remote control
-if [ "$CHROME_REMOTE" == "1" ]; then
+if [ "$CHROME_REMOTE" == "true" ]; then
   killall -9 irexec > /dev/null 2>&1
 fi
 
-touch /var/lock/start.kodi
-systemctl start kodi.service
+# start kodi
+if [ "$CHROME_EXIT" == "false" ]; then
+  touch /var/lock/start.kodi
+  systemctl start kodi.service
+else
+  if [ "$CHROME_SOUND" == "true" ]; then
+      kodi-send --action="RunScript(/usr/bin/sound-kodi.py, resume)"
+  fi
+fi
+
 exit 0
