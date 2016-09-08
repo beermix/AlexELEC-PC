@@ -4,13 +4,12 @@
 ################################################################################
 
 PKG_NAME="vdr-plugin-softhddevice"
-PKG_VERSION="6dfa88a"
+PKG_VERSION="4de20b9"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/pesintta/vdr-plugin-softhddevice/"
-PKG_SITE="http://projects.vdr-developer.org/projects/plg-softhddevice"
-PKG_URL="https://projects.vdr-developer.org/git/$PKG_NAME.git/snapshot/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_SITE="https://github.com/pesintta/vdr-plugin-softhddevice"
+PKG_URL="https://github.com/pesintta/vdr-plugin-softhddevice/archive/$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain vdr xcb-util-keysyms xcb-util-wm xcb-util-renderutil xcb-util-image"
 PKG_PRIORITY="optional"
 PKG_SECTION="xmedia/tvservice"
