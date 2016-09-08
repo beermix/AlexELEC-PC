@@ -52,8 +52,9 @@ case "$1" in
         	;;
 
 	5)	# current Display resolution
-		D_RES=$(xrandr |grep " connected"| awk '{print $3}'| sed s/+.*//)
-		echo -ne "Resolution:\t\t"$D_RES
+		D_DEV=$(xrandr |grep ' connected' | awk '{print $1}')
+		D_RES=$(xrandr |grep ' connected' | awk '{print $3}' | sed s/+.*//)
+		echo -ne "Display:\t"${D_DEV:-<unknown>}"\t"${D_RES:-N/A}
 		exit
         	;;
 
@@ -65,13 +66,13 @@ case "$1" in
         	;;
 
 	7)	# temperature of CPU and mainboard
-		CPU=$(cputemp)
+		CPU=`cputemp`
 		echo -ne "Temperatures:\tCPU: "$CPU
 		exit
         	;;
 
 	8	)# GPU temperature
-		GPU=$(gputemp)
+		GPU=`gputemp`
 		echo -e "\tGPU: "$GPU
 		exit
         	;;

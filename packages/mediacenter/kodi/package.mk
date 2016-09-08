@@ -346,6 +346,8 @@ post_makeinstall_target() {
     cp $PKG_DIR/scripts/gui-switch.start $INSTALL/usr/bin
     # Drop RAM service
     cp $PKG_DIR/scripts/drop-ram.start $INSTALL/usr/bin
+    # resolution service
+    cp $PKG_DIR/scripts/kodi-setres $INSTALL/usr/bin
 
   if [ ! "$DISPLAYSERVER" = "x11" ]; then
     rm -rf $INSTALL/usr/lib/kodi/kodi-xrandr
@@ -436,4 +438,6 @@ post_install() {
   enable_service gui-switch.service
 # Drop RAM service
   enable_service drop-ram.service
+# resolution service
+  enable_service kodi-setresmode.service
 }

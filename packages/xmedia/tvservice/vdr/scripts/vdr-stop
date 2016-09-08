@@ -12,8 +12,9 @@ if [ -f $LOCK_DIR/success.vdr ]; then
   exit 0
 fi
 
-# Abnormal VDR exit
+## Abnormal VDR exit ##
 if [ -f $LOCK_DIR/start.kodi ]; then
+  [ $(pidof vdr) ] && killall -9 vdr > /dev/null 2>&1
   if [ ! $(pidof kodi.bin) ]; then
       logger -t vdr "vdr-stop: start kodi.service"
       systemctl start kodi.service

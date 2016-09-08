@@ -74,6 +74,20 @@ SERVICE_DIR="/storage/.cache/services"
 wait_for_dvb
 load_firmware
 
+# refresh rate 50hz
+if [ "$VDR_50HZ" == "1" ]; then
+  # connected Output
+  DISP=$(xrandr |grep ' connected' | awk '{print $1}')
+  # current resolution
+  RES=$(xrandr --verbose | grep '*current' | awk '{print $1}')
+  # current mode save
+  MODE=$(xrandr --verbose | grep '*current' | awk '{print $2}' | sed 's/(//; s/)//')
+  echo "MODE=\"$MODE\"" >> /tmp/resolution.conf
+
+  logger -t vdr "set display mode: $DISP $RES 50hz"
+  xrandr --output $DISP --mode $RES --rate 50
+fi
+
 echo "SYS_LOCALE=\"$SYS_LOCALE\"" > /run/alexelec/vdr.conf
 echo "VDR_ARGS=\"$VDR_ARGS\"" >> /run/alexelec/vdr.conf
 
