@@ -51,13 +51,15 @@ make_target() {
 makeinstall_target() {
   cd $ROOT/$PKG_BUILD
   $STRIP dist/Linux*/lib/*.so
+  # target for Chromium
+  mkdir -p $INSTALL/usr/config/chromium/lib
+  cp -L dist/Linux*/lib/*.so $INSTALL/usr/config/chromium/lib
+  # host
+  rm -f dist/Linux*/lib/libsqlite3.so
   cp -L dist/Linux*/lib/*.so $SYSROOT_PREFIX/usr/lib
   cp -L dist/Linux*/lib/libcrmf.a $SYSROOT_PREFIX/usr/lib
   mkdir -p $SYSROOT_PREFIX/usr/include/nss
   cp -RL dist/{public,private}/nss/* $SYSROOT_PREFIX/usr/include/nss
   cp -L dist/Linux*/lib/pkgconfig/nss.pc $SYSROOT_PREFIX/usr/lib/pkgconfig
-
-  mkdir -p $INSTALL/usr/config/chromium/lib
-    cp -L dist/Linux*/lib/*.so $INSTALL/usr/config/chromium/lib
 }
 

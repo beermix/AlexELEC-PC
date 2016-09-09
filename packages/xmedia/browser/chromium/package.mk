@@ -37,7 +37,6 @@ make_target() {
   _google_default_client_id=1058644186824-i9jgfv72cd3p032tnluchqpklgnlejsr.apps.googleusercontent.com
   _google_default_client_secret=3NN7qvE3D0TpB1HbNMYMBu_Z
 
-  #CFLAGS+=' -fno-delete-null-pointer-checks'
   ## workaround for gcc-6
   mv /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.org
   mv /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19.org

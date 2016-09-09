@@ -93,7 +93,7 @@ chmod 4755 $CHROME_DIR/chrome-sandbox
 
 # start chromium
 logger -t chromium "Chromium run: $ARGS_CHROME"
-LD_PRELOAD=/usr/lib/libGL.so LANG=$SYS_LOCALE $CHROME_DIR/chromium.bin \
+LANG=$SYS_LOCALE $CHROME_DIR/chromium.bin \
   --ppapi-flash-path=$CHROME_DIR/PepperFlash/libpepflashplayer.so \
   --test-type $ARGS_CHROME > $ARGS_DEBUG 2>&1
 
