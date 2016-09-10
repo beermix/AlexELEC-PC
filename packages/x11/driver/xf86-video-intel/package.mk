@@ -4,7 +4,7 @@
 ################################################################################
 
 PKG_NAME="xf86-video-intel"
-PKG_VERSION="b617f80"
+PKG_VERSION="a77397a"
 PKG_REV="1"
 PKG_ARCH="x86_64"
 PKG_LICENSE="OSS"
@@ -28,7 +28,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-backlight \
                            --enable-dri \
                            --disable-dri1 \
                            --enable-dri2 \
-                           --enable-dri3 \
+                           --disable-dri3 \
                            --enable-kms --enable-kms-only \
                            --disable-ums --disable-ums-only \
                            --enable-sna \
@@ -37,9 +37,9 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-backlight \
                            --disable-xaa \
                            --disable-dga \
                            --disable-tear-free \
+                           --disable-rendernode \
                            --disable-create2 \
                            --disable-async-swap \
-                           --with-default-dri=3 \
                            --with-xorg-module-dir=$XORG_PATH_MODULES"
 
 pre_configure_target() {
@@ -50,6 +50,6 @@ pre_configure_target() {
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/share/polkit-1
 
-  mkdir -p $INSTALL/usr/config/X11
-    cp $PKG_DIR/config/*.conf $INSTALL/usr/config/X11
+ mkdir -p $INSTALL/etc/X11
+    cp $PKG_DIR/config/*.conf $INSTALL/etc/X11
 }

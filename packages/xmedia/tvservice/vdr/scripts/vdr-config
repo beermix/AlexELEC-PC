@@ -75,6 +75,7 @@ wait_for_dvb
 load_firmware
 
 # refresh rate 50hz
+rm -f /tmp/resolution.conf
 if [ "$VDR_50HZ" == "1" ]; then
   # connected Output
   DISP=$(xrandr |grep ' connected' | awk '{print $1}')
@@ -82,7 +83,7 @@ if [ "$VDR_50HZ" == "1" ]; then
   RES=$(xrandr --verbose | grep '*current' | awk '{print $1}')
   # current mode save
   MODE=$(xrandr --verbose | grep '*current' | awk '{print $2}' | sed 's/(//; s/)//')
-  echo "MODE=\"$MODE\"" >> /tmp/resolution.conf
+  echo "MODE=\"$MODE\"" > /tmp/resolution.conf
 
   logger -t vdr "set display mode: $DISP $RES 50hz"
   xrandr --output $DISP --mode $RES --rate 50

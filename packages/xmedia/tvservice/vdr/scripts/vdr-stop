@@ -13,21 +13,31 @@ if [ -f $LOCK_DIR/success.vdr ]; then
 fi
 
 ## Abnormal VDR exit ##
-if [ -f $LOCK_DIR/start.kodi ]; then
-  [ $(pidof vdr) ] && killall -9 vdr > /dev/null 2>&1
-  if [ ! $(pidof kodi.bin) ]; then
-      logger -t vdr "vdr-stop: start kodi.service"
-      systemctl start kodi.service
+
+start_kodi () {
+[ $(pidof vdr) ] && killall -9 vdr > /dev/null 2>&1
+if [ ! $(pidof kodi.bin) ]; then
+  logger -t vdr "vdr-stop: start kodi.service"
+  systemctl start kodi.service
+fi
+}
+
+if [ ! -f $LOCK_DIR/start.vdr ]; then
+  if [ -f $LOCK_DIR/start.kodi ]; then
+      start_kodi
+  elif [ -f $LOCK_DIR/sleep.vdr ]; then
+      logger -t vdr "vdr-stop: suspend system"
+      systemctl suspend
+  elif [ -f $LOCK_DIR/reboot.vdr ]; then
+      logger -t vdr "vdr-stop: reboot system"
+      systemctl reboot
+  elif [ -f $LOCK_DIR/power.vdr ]; then
+      logger -t vdr "vdr-stop: poweroff system"
+      systemctl poweroff 
+  else
+      touch $LOCK_DIR/start.kodi
+      start_kodi
   fi
-elif [ -f $LOCK_DIR/sleep.vdr ]; then
-  logger -t vdr "vdr-stop: suspend system"
-  systemctl suspend
-elif [ -f $LOCK_DIR/reboot.vdr ]; then
-  logger -t vdr "vdr-stop: reboot system"
-  systemctl reboot
-elif [ -f $LOCK_DIR/power.vdr ]; then
-  logger -t vdr "vdr-stop: poweroff system"
-  systemctl poweroff 
 fi
 
 exit 0
