@@ -49,4 +49,7 @@ pre_configure_target() {
 
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/share/polkit-1
+
+  mkdir -p $INSTALL/usr/config/X11
+    cp $PKG_DIR/config/*.conf $INSTALL/usr/config/X11
 }
