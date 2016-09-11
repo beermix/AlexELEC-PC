@@ -175,25 +175,8 @@ diff -Naurp vdr-2.2.0/shutdown.c vdr-2.2.0-patch/shutdown.c
          return false;
 diff -Naurp vdr-2.2.0/thread.c vdr-2.2.0-patch/thread.c
 --- vdr-2.2.0/thread.c	2013-12-29 17:26:33.000000000 +0200
-+++ vdr-2.2.0-patch/thread.c	2016-09-11 11:12:04.000000000 +0300
-@@ -471,9 +471,13 @@ bool cPipe::Open(const char *Command, co
-      }
-   if ((pid = fork()) < 0) { // fork failed
-      LOG_ERROR;
--     close(fd[0]);
--     close(fd[1]);
--     return false;
-+     cCondWait::SleepMs(100);
-+     if ((pid = fork()) < 0) {
-+         LOG_ERROR;
-+         close(fd[0]);
-+         close(fd[1]);
-+         return false;
-+         }
-      }
- 
-   const char *mode = "w";
-@@ -562,7 +566,11 @@ int SystemExec(const char *Command, bool
++++ vdr-2.2.0-patch/thread.c	2016-09-11 07:57:37.000000000 +0300
+@@ -562,7 +562,11 @@ int SystemExec(const char *Command, bool
  
    if ((pid = fork()) < 0) { // fork failed
       LOG_ERROR;
