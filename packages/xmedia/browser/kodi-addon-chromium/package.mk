@@ -4,7 +4,7 @@
 ################################################################################
 
 PKG_NAME="kodi-addon-chromium"
-PKG_VERSION="63d3406"
+PKG_VERSION="3ab35e6"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="prop."
