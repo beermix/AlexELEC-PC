@@ -136,7 +136,7 @@ configure_target() {
               --pkg-config="$ROOT/$TOOLCHAIN/bin/pkg-config" \
               --enable-optimizations \
               --disable-extra-warnings \
-              --disable-ffprobe \
+              --enable-ffprobe \
               --disable-ffplay \
               --disable-ffserver \
               --enable-ffmpeg \
