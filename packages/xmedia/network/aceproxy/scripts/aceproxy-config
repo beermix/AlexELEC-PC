@@ -6,6 +6,7 @@
 
 . /etc/profile
 
+LOCK_DIR="/var/lock"
 SERVICE_DIR="/storage/.cache/services"
 ACEPROXY_DIR="/storage/.config/aceproxy"
 ACEPROXY_CONFDIR="$ACEPROXY_DIR/plugins/config"
