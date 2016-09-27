@@ -4,7 +4,7 @@
 ################################################################################
 
 PKG_NAME="scan-m3u"
-PKG_VERSION="1.1"
+PKG_VERSION="1.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -26,12 +26,13 @@ pre_configure_target() {
 
 make_target() {
   cp -aP $PKG_DIR/source/* ./
-  CC=$CC CFLAGS=$CFLAGS ./shc -v -r -B -f m3u_info.sh
-  CC=$CC CFLAGS=$CFLAGS ./shc -v -r -B -f scan-m3u.sh
+  CC=$CC CFLAGS=$CFLAGS ./shc -v -r -B -f m3u_info.src
+  CC=$CC CFLAGS=$CFLAGS ./shc -v -r -B -f scan-m3u.src
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
-    cp m3u_info.sh.x $INSTALL/usr/bin/m3u_info
-    cp scan-m3u.sh.x $INSTALL/usr/bin/scan-m3u
+    cp m3u_kill $INSTALL/usr/bin/m3u_kill
+    cp m3u_info.src.x $INSTALL/usr/bin/m3u_info
+    cp scan-m3u.src.x $INSTALL/usr/bin/scan-m3u
 }
