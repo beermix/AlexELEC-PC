@@ -81,14 +81,14 @@ fi
   if [ -z "$OUTPUT_FILE" ]; then
       Channels
   elif [ "$OUTPUT_FILE" == "$VDR_CHFILE" ]; then
-      [ "$DEL_CH" == "yes" ] && rm -f $VDR_CHFILE
+      [ "$DEL_CH" == "1" ] && rm -f $VDR_CHFILE
       if [ -f "$VDR_CHFILE" ]; then
         sed -i '/:TTV.*/q' $VDR_CHFILE  > /dev/null 2>&1
         sed -i 's/:TTV.*//; /^$/d;' $VDR_CHFILE  > /dev/null 2>&1
       fi
       Channels >> $VDR_CHFILE
   else
-      [ "$DEL_CH" == "yes" ] && rm -f $OUTPUT_FILE
+      [ "$DEL_CH" == "1" ] && rm -f $OUTPUT_FILE
       Channels >> $OUTPUT_FILE
   fi
 

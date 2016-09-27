@@ -70,6 +70,12 @@ SERVICE_DIR="/storage/.cache/services"
 
   [ -n "$VDR_PLUGINS" ] && VDR_ARGS="$VDR_ARGS $VDR_PLUGINS"
 
+  if [ "$VDR_IPTV" == "1" -a "$VDR_TTV" == "1" ]; then
+      [ -z "$VDR_TTV_DEL" ] && VDR_TTV_DEL=0
+      [ -z "$VDR_TTV_NUM" ] && VDR_TTV_NUM=1000
+      eval DEL=$VDR_TTV_DEL NUM=$VDR_TTV_NUM /usr/bin/scan-ttv VDR > /dev/null 2>&1
+  fi
+
 # wait for DVB
 wait_for_dvb
 load_firmware
