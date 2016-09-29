@@ -4,19 +4,21 @@
 ################################################################################
 
 PKG_NAME="vulkan-loader"
-PKG_VERSION="f93e39d"
+PKG_VERSION="fb13c2c"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Apache 2.0"
 PKG_SITE="https://www.khronos.org"
 PKG_URL="https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/$PKG_VERSION.tar.gz"
-PKG_SOURCE_DIR="Vulkan-Loader*"
 PKG_DEPENDS_TARGET="toolchain cmake:host"
-PKG_PRIORITY="optional"
 PKG_SECTION="xmedia/depends"
 PKG_SHORTDESC="Vulkan Installable Client Driver (ICD) Loader."
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+post_unpack() {
+  mv $BUILD/Vulkan-Loader* $BUILD/$PKG_NAME-$PKG_VERSION
+}
 
 pre_configure_target() {
   cd ..
@@ -38,6 +40,6 @@ pre_configure_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib
-  cp -rv loader/libvulkan.so* $INSTALL/usr/lib/
-  cp -rv loader/libvulkan.so* $SYSROOT_PREFIX/usr/lib/
+  cp -r loader/libvulkan.so* $INSTALL/usr/lib/
+  cp -r loader/libvulkan.so* $SYSROOT_PREFIX/usr/lib/
 }

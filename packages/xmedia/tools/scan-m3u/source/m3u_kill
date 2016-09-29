@@ -4,6 +4,6 @@
 #      Copyright (C) 2011-2016 Alexandr Zuyev (alex@alexelec.in.ua)
 ################################################################################
 
-sleep 30
+usleep $1
 [ "$(pidof ffmpeg)" ] && killall -9 ffmpeg > /dev/null 2>&1
 exit 0

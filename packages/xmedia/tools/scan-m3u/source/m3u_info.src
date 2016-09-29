@@ -20,7 +20,9 @@ rm -rf $TMPDIR/*
 [ "$(pidof ffmpeg)" ] && killall -9 ffmpeg > /dev/null 2>&1
 [ "$(pidof m3u_kill)" ] && killall -9 m3u_kill > /dev/null 2>&1
 
-/usr/bin/m3u_kill &
+KILL_TOUT=$( expr 30000000 + $TOUT )
+
+/usr/bin/m3u_kill $KILL_TOUT &
 ffmpeg -timeout $TOUT -i $URL 2>&1 | grep -A 6 'Duration' | \
   sed '1d; s/^[ \t]*//; s/[ \t]*$//; s/://g; s/#0[0-9]//g; \
   s/(...)//; s/Metadata.*//; s/service_provider.*//; s/service_name.*//; /^$/d' | \

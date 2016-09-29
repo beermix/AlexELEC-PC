@@ -71,10 +71,12 @@ SERVICE_DIR="/storage/.cache/services"
   [ -n "$VDR_PLUGINS" ] && VDR_ARGS="$VDR_ARGS $VDR_PLUGINS"
 
   if [ -f "$SERVICE_DIR/ttv.conf" -a "$VDR_IPTV" == "1" ]; then
-      . $SERVICE_DIR/ttv.conf
-      [ -z "$VDR_TTV_DEL" ] && VDR_TTV_DEL=0
-      [ -z "$VDR_TTV_NUM" ] && VDR_TTV_NUM=1000
-      eval DEL=$VDR_TTV_DEL NUM=$VDR_TTV_NUM /usr/bin/scan-ttv VDR > /dev/null 2>&1
+      if systemctl is-active aceproxy.service &>/dev/null ; then
+          . $SERVICE_DIR/ttv.conf
+          [ -z "$VDR_TTV_DEL" ] && VDR_TTV_DEL=0
+          [ -z "$VDR_TTV_NUM" ] && VDR_TTV_NUM=1000
+          eval DEL=$VDR_TTV_DEL NUM=$VDR_TTV_NUM /usr/bin/scan-ttv VDR > /dev/null 2>&1
+      fi
   fi
 
 # wait for DVB
