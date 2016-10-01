@@ -1,0 +1,15 @@
+[Unit]
+Description=Boblightd service
+After=graphical.target
+ConditionPathExists=/storage/.cache/services/boblight.conf
+
+[Service]
+ExecStartPre=-/usr/bin/boblight-x11.start
+ExecStart=/usr/bin/boblightd
+TimeoutStopSec=1
+Restart=always
+RestartSec=10
+StartLimitInterval=0
+
+[Install]
+WantedBy=kodi.target

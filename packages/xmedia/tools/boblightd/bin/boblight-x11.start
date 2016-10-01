@@ -1,0 +1,10 @@
+#!/bin/sh
+################################################################################
+#      This file is part of Alex@ELEC - http://www.alexelec.in.ua
+#      Copyright (C) 2011-2016 Alexandr Zuyev (alex@alexelec.in.ua)
+################################################################################
+
+if [ -f /storage/.config/boblight/boblight.X11 ]; then
+  logger -t boblightd "Boblight X11 start..."
+  /usr/bin/boblight-X11 -f > /dev/null 2>&1
+fi

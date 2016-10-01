@@ -19,7 +19,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 # tools
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mc scan-s2 scan-m3u inputlirc unclutter xdotool"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mc scan-s2 scan-m3u inputlirc unclutter xdotool boblightd"
 
 # vnc
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET x11vnc"
