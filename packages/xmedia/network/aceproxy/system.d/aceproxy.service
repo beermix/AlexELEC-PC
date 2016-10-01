@@ -1,5 +1,8 @@
 [Unit]
 Description=AceProxy server
+Requires=network-online.target
+After=network-online.target acestream.service
+Before=vdr.service kodi.service
 ConditionPathExists=/storage/.cache/services/aceproxy.conf
 
 [Service]

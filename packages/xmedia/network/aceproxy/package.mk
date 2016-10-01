@@ -29,3 +29,7 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
     cp $PKG_DIR/scripts/* $INSTALL/usr/bin
 }
+
+post_install() {
+  enable_service aceproxy.service
+}

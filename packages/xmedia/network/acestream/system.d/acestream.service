@@ -1,5 +1,8 @@
 [Unit]
 Description=AceStream Engine
+Requires=network-online.target
+After=network-online.target
+Before=vdr.service kodi.service
 ConditionPathExists=/storage/.cache/services/acestream.conf
 
 [Service]

@@ -1,6 +1,6 @@
 diff -Naurp kodi-16.1-c6f6e0b/addons/resource.language.en_gb/resources/strings.po kodi-16.1-c6f6e0b-patch/addons/resource.language.en_gb/resources/strings.po
---- kodi-16.1-c6f6e0b/addons/resource.language.en_gb/resources/strings.po	2016-08-29 09:01:12.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/addons/resource.language.en_gb/resources/strings.po	2016-08-29 08:59:59.000000000 +0300
+--- kodi-16.1-c6f6e0b/addons/resource.language.en_gb/resources/strings.po	2016-10-01 12:54:19.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/addons/resource.language.en_gb/resources/strings.po	2016-10-01 12:49:05.000000000 +0300
 @@ -5459,7 +5459,7 @@ msgstr ""
  
  #: system/settings/settings.xml
@@ -11,23 +11,24 @@ diff -Naurp kodi-16.1-c6f6e0b/addons/resource.language.en_gb/resources/strings.p
  
  #: system/settings/settings.xml
 diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/Application.cpp
---- kodi-16.1-c6f6e0b/xbmc/Application.cpp	2016-08-29 09:01:13.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/xbmc/Application.cpp	2016-08-29 08:05:42.000000000 +0300
-@@ -225,6 +225,8 @@
+--- kodi-16.1-c6f6e0b/xbmc/Application.cpp	2016-10-01 12:54:19.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/Application.cpp	2016-10-01 13:07:24.000000000 +0300
+@@ -225,6 +225,9 @@
  #include "pictures/GUIWindowSlideShow.h"
  #include "windows/GUIWindowLoginScreen.h"
  
 +#include <fstream>
++#include <fcntl.h>
 +
  using namespace ADDON;
  using namespace XFILE;
  #ifdef HAS_DVD_DRIVE
-@@ -1083,6 +1085,39 @@ void CApplication::CreateUserDirs()
+@@ -1083,6 +1086,19 @@ void CApplication::CreateUserDirs()
  
  bool CApplication::Initialize()
  {
 +  // TV backend start
-+  std::ifstream isRunVDR, isRunTVH, isRunACE, isRunProxy, isAllACE, isAllProxy;
++  std::ifstream isRunVDR, isRunTVH;
 +
 +  isRunVDR.open("/storage/.cache/services/vdr-backend.conf");
 +  if(isRunVDR.good())
@@ -39,30 +40,10 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
 +    system("systemctl start tvheadend.service");
 +  isRunTVH.close();
 +
-+  isRunACE.open("/storage/.cache/services/acestream.conf");
-+  if(isRunACE.good())
-+  {
-+    isAllACE.open("/var/lock/acestream.always");
-+    if(!isAllACE.good())
-+      system("systemctl start acestream.service");
-+    isAllACE.close();
-+  }
-+  isRunACE.close();
-+
-+  isRunProxy.open("/storage/.cache/services/aceproxy.conf");
-+  if(isRunProxy.good())
-+  {
-+    isAllProxy.open("/var/lock/aceproxy.always");
-+    if(!isAllProxy.good())
-+      system("systemctl start aceproxy.service");
-+    isAllProxy.close();
-+  }
-+  isRunProxy.close();
-+
  #if defined(HAS_DVD_DRIVE) && !defined(TARGET_WINDOWS) // somehow this throws an "unresolved external symbol" on win32
    // turn off cdio logging
    cdio_loglevel_default = CDIO_LOG_ERROR;
-@@ -2501,6 +2536,7 @@ void CApplication::OnApplicationMessage(
+@@ -2501,6 +2517,7 @@ void CApplication::OnApplicationMessage(
  
    case TMSG_QUIT:
      SetExitCode(EXITCODE_QUIT);
@@ -70,7 +51,7 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
      break;
    
    case TMSG_SHUTDOWN:
-@@ -2512,7 +2548,8 @@ void CApplication::OnApplicationMessage(
+@@ -2512,7 +2529,8 @@ void CApplication::OnApplicationMessage(
      break;
  
    case TMSG_HIBERNATE:
@@ -80,12 +61,12 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
      break;
  
    case TMSG_SUSPEND:
-@@ -2925,6 +2962,39 @@ void CApplication::Stop(int exitCode)
+@@ -2925,6 +2943,19 @@ void CApplication::Stop(int exitCode)
  {
    try
    {
 +    // TV backend stop
-+    std::ifstream isRunVDR, isRunTVH, isRunACE, isRunProxy, isAllACE, isAllProxy;
++    std::ifstream isRunVDR, isRunTVH;
 +
 +    isRunVDR.open("/storage/.cache/services/vdr-backend.conf");
 +    if(isRunVDR.good())
@@ -97,30 +78,10 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
 +      system("systemctl stop tvheadend.service");
 +    isRunTVH.close();
 +
-+    isRunProxy.open("/storage/.cache/services/aceproxy.conf");
-+    if(isRunProxy.good())
-+    {
-+      isAllProxy.open("/var/lock/aceproxy.always");
-+      if(!isAllProxy.good())
-+        system("systemctl stop aceproxy.service");
-+      isAllProxy.close();
-+    }
-+    isRunProxy.close();
-+
-+    isRunACE.open("/storage/.cache/services/acestream.conf");
-+    if(isRunACE.good())
-+    {
-+      isAllACE.open("/var/lock/acestream.always");
-+      if(!isAllACE.good())
-+        system("systemctl stop acestream.service");
-+      isAllACE.close();
-+    }
-+    isRunACE.close();
-+
      CVariant vExitCode(CVariant::VariantTypeObject);
      vExitCode["exitcode"] = m_ExitCode;
      CAnnouncementManager::GetInstance().Announce(System, "xbmc", "OnQuit", vExitCode);
-@@ -3046,6 +3116,26 @@ void CApplication::Stop(int exitCode)
+@@ -3046,6 +3077,26 @@ void CApplication::Stop(int exitCode)
      av_lockmgr_register(NULL);
  
      CLog::Log(LOGNOTICE, "stopped");
@@ -132,16 +93,16 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
 +      isStartVDR.open("/storage/.cache/services/vdr.conf");
 +      if(isStartVDR.good())
 +      {
-+        system("rm -f /var/lock/start.kodi");
-+        system("touch /var/lock/start.vdr");
++        remove("/var/lock/start.kodi");
++        creat("/var/lock/start.vdr", S_IRUSR|S_IROTH);
 +        system("systemctl start vdr.service");
 +      }
 +      isStartVDR.close();
 +    }
 +    else if (m_ExitCode == EXITCODE_GAMES) // start Games
 +    {
-+        system("rm -f /var/lock/start.kodi");
-+        system("touch /var/lock/start.games");
++        remove("/var/lock/start.kodi");
++        creat("/var/lock/start.games", S_IRUSR|S_IROTH);
 +        system("systemctl start emustation.service");
 +    }
    }
@@ -149,7 +110,7 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/Application.cpp kodi-16.1-c6f6e0b-patch/xbmc/
    {
 diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/FallbackPowerSyscall.h kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/FallbackPowerSyscall.h
 --- kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/FallbackPowerSyscall.h	2016-04-26 10:06:23.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/FallbackPowerSyscall.h	2016-08-29 08:59:59.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/FallbackPowerSyscall.h	2016-10-01 12:49:05.000000000 +0300
 @@ -27,12 +27,12 @@ class CFallbackPowerSyscall : public CPo
  public:
    virtual bool Powerdown() {return true; }
@@ -167,7 +128,7 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/FallbackPowerSyscall.h 
  };
 diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp
 --- kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp	2016-04-26 10:06:23.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp	2016-08-29 08:59:59.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp	2016-10-01 12:49:05.000000000 +0300
 @@ -128,7 +128,7 @@ bool CLogindUPowerSyscall::CanSuspend()
  
  bool CLogindUPowerSyscall::CanHibernate()
@@ -179,7 +140,7 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/linux/LogindUPowerSyscall.cpp
  bool CLogindUPowerSyscall::CanReboot()
 diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/PowerManager.cpp kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/PowerManager.cpp
 --- kodi-16.1-c6f6e0b/xbmc/powermanagement/PowerManager.cpp	2016-04-26 10:06:23.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/PowerManager.cpp	2016-08-29 08:59:59.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/powermanagement/PowerManager.cpp	2016-10-01 12:49:05.000000000 +0300
 @@ -190,7 +190,7 @@ bool CPowerManager::Suspend()
  
  bool CPowerManager::Hibernate()
@@ -217,8 +178,8 @@ diff -Naurp kodi-16.1-c6f6e0b/xbmc/powermanagement/PowerManager.cpp kodi-16.1-c6
 +  list.push_back(make_pair(g_localizeStrings.Get(13010), POWERSTATE_HIBERNATE));
  }
 diff -Naurp kodi-16.1-c6f6e0b/xbmc/XBApplicationEx.h kodi-16.1-c6f6e0b-patch/xbmc/XBApplicationEx.h
---- kodi-16.1-c6f6e0b/xbmc/XBApplicationEx.h	2016-08-29 09:01:12.000000000 +0300
-+++ kodi-16.1-c6f6e0b-patch/xbmc/XBApplicationEx.h	2016-08-29 08:59:59.000000000 +0300
+--- kodi-16.1-c6f6e0b/xbmc/XBApplicationEx.h	2016-10-01 12:54:19.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/XBApplicationEx.h	2016-10-01 12:49:05.000000000 +0300
 @@ -29,6 +29,7 @@ enum {
    EXITCODE_POWERDOWN = 64,
    EXITCODE_RESTARTAPP= 65,

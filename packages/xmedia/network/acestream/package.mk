@@ -29,3 +29,7 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/config
     cp $PKG_DIR/config/* $INSTALL/usr/config
 }
+
+post_install() {
+  enable_service acestream.service
+}

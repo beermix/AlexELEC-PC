@@ -5,6 +5,7 @@
 ################################################################################
 
 LOCK_DIR="/var/lock"
+SERVICE_DIR="/storage/.cache/services"
 
 # Success VDR exit
 if [ -f $LOCK_DIR/success.vdr ]; then
