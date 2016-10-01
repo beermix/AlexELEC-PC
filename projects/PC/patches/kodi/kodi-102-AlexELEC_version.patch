@@ -160,3 +160,24 @@ diff -Naurp kodi-16.0-beta1-9a5ddf5/xbmc/windows/GUIWindowSystemInfo.cpp kodi-16
    }
  
    else if (m_section == CONTROL_BT_STORAGE)
+diff -Naurp kodi-16.1-c6f6e0b/xbmc/utils/SystemInfo.cpp kodi-16.1-c6f6e0b-patch/xbmc/utils/SystemInfo.cpp
+--- kodi-16.1-c6f6e0b/xbmc/utils/SystemInfo.cpp	2016-10-01 16:43:33.000000000 +0300
++++ kodi-16.1-c6f6e0b-patch/xbmc/utils/SystemInfo.cpp	2016-10-01 16:54:18.000000000 +0300
+@@ -658,7 +658,7 @@ std::string CSysInfo::GetOsVersion(void)
+       osVersion += ".0";
+   }
+ #elif defined(TARGET_LINUX)
+-  osVersion = getValueFromOs_release("VERSION_ID");
++  osVersion = getValueFromOs_release("ALEXELEC_ARCH");
+   if (osVersion.empty())
+     osVersion = getValueFromLsb_release(lsb_rel_release);
+ #endif // defined(TARGET_LINUX)
+@@ -750,7 +750,7 @@ std::string CSysInfo::GetOsPrettyNameWit
+   }
+ 
+   if (osNameVer.find(GetOsVersion()) == std::string::npos)
+-    osNameVer += " " + GetOsVersion();
++    osNameVer += " (" + GetOsVersion() + ")";
+ #endif // defined(TARGET_LINUX)
+ 
+   if (osNameVer.empty())
