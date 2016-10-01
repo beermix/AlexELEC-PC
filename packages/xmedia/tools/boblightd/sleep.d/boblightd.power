@@ -7,15 +7,20 @@
 . /etc/profile
 
 SERVICE="boblightd.service"
+LOCK_DIR="/var/lock"
 
 case "$1" in
   pre)
     if systemctl is-active "$SERVICE" &>/dev/null ; then
+      progress "stoping $SERVICE ($1)..."
       systemctl stop "$SERVICE"
+      touch $LOCK_DIR/boblightd.sleep
     fi
     ;;
   post)
-    if systemctl is-enabled "$SERVICE" &>/dev/null ; then
+    if [ -f "$LOCK_DIR/boblightd.sleep" ]; then
+      progress "starting $SERVICE ($1)..."
+      rm -f $LOCK_DIR/boblightd.sleep
       systemctl start "$SERVICE"
     fi
     ;;
