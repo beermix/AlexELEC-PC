@@ -6,7 +6,6 @@
 
 . /etc/profile
 
-LOCK_DIR="/var/lock"
 SERVICE_DIR="/storage/.cache/services"
 ACEPROXY_DIR="/storage/.config/aceproxy"
 ACEPROXY_CONFDIR="$ACEPROXY_DIR/plugins/config"
@@ -14,12 +13,6 @@ ACEPROXY_CONFDIR="$ACEPROXY_DIR/plugins/config"
 download_logos
 
 [ -f $SERVICE_DIR/aceproxy.conf ] && . $SERVICE_DIR/aceproxy.conf
-
-if [ "$ACEPROXY_ALWAYS" == "1" ]; then
-  touch $LOCK_DIR/aceproxy.always
-else
-  rm -f $LOCK_DIR/aceproxy.always
-fi
 
 [ -z $ACEPROXY_DEBUG ] && ACEPROXY_DEBUG="INFO"
 [ -z $ACEPROXY_LOGIN ] && ACEPROXY_LOGIN="none"

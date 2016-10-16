@@ -5,17 +5,10 @@
 ################################################################################
 
 BIN_DIR="/usr/bin"
-LOCK_DIR="/var/lock"
 SERVICE_DIR="/storage/.cache/services"
 ACESTREAM_DIR="/storage/.ACEStream"
 
 [ -f $SERVICE_DIR/acestream.conf ] && . $SERVICE_DIR/acestream.conf
-
-if [ "$ACE_ALWAYS" == "1" ]; then
-  touch $LOCK_DIR/acestream.always
-else
-  rm -f $LOCK_DIR/acestream.always
-fi
 
 [ -z $ACE_CACHE_CLEAR ] && ACE_CACHE_CLEAR="1"
 [ -z $ACE_CACHE_DIR ] && ACE_CACHE_DIR="$ACESTREAM_DIR/.acestream_cache"
