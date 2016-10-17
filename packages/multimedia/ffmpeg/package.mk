@@ -103,7 +103,6 @@ configure_target() {
               --enable-swscale \
               --enable-postproc \
               --enable-avfilter \
-              --disable-devices \
               --enable-pthreads \
               --disable-w32threads \
               --disable-x11grab \
