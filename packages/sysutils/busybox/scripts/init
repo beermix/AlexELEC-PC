@@ -821,6 +821,9 @@
       "MEDIA")             # Media_Build drivers
           DRIVER="mb"
        ;;
+      "MEDIA-CC")          # Media_Build drivers CrazyCat
+          DRIVER="mbcc"
+       ;;
       "S2")                # S2-liplianin drivers
           DRIVER="s2"
        ;;
