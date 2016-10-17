@@ -5,7 +5,7 @@
 
 PKG_NAME="wicard"
 PKG_VERSION="1.19"
-PKG_REV="1"
+PKG_REV="2"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://www.alexelec.in.ua"
@@ -29,8 +29,8 @@ makeinstall_target() {
     cp $PKG_DIR/scripts/* $INSTALL/usr/bin
 
   # support 32bit libs for Wicard
-  mkdir -p $INSTALL/lib/
-    cp -p $PKG_DIR/lib32/* $INSTALL/lib
+  #mkdir -p $INSTALL/lib/
+  #  cp -p $PKG_DIR/lib32/* $INSTALL/lib
 }
 
 post_install() {
