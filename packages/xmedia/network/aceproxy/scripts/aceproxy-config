@@ -14,12 +14,23 @@ download_logos
 
 [ -f $SERVICE_DIR/aceproxy.conf ] && . $SERVICE_DIR/aceproxy.conf
 
+[ -z $ACEPROXY_VLC ] && ACEPROXY_VLC="0"
 [ -z $ACEPROXY_DEBUG ] && ACEPROXY_DEBUG="INFO"
 [ -z $ACEPROXY_LOGIN ] && ACEPROXY_LOGIN="none"
 [ -z $ACEPROXY_PASSW ] && ACEPROXY_PASSW="none"
 
-# Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+
 rm -f $ACEPROXY_DIR/aceconfig.pyo
+
+# VLC support
+if [ "$ACEPROXY_VLC" == "1" ]; then
+  sed -i -e "s/vlcuse =.*/vlcuse = True/" $ACEPROXY_DIR/aceconfig.py
+  systemctl start ace-vlc.service
+else
+  sed -i -e "s/vlcuse =.*/vlcuse = False/" $ACEPROXY_DIR/aceconfig.py
+fi
+
+# Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 sed -i -e "s/loglevel = logging.*/loglevel = logging\.$ACEPROXY_DEBUG/" $ACEPROXY_DIR/aceconfig.py
 
 # Login and Password
@@ -28,3 +39,5 @@ if [ "$ACEPROXY_LOGIN" != "none" -a "$ACEPROXY_PASSW" != "none" ]; then
   sed -i -e "s/email =.*/email = \'$ACEPROXY_LOGIN\'/" $ACEPROXY_CONFDIR/p2pproxy.py
   sed -i -e "s/password =.*/password = \'$ACEPROXY_PASSW\'/" $ACEPROXY_CONFDIR/p2pproxy.py
 fi
+
+exit 0

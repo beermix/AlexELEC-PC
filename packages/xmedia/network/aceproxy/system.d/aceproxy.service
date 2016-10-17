@@ -10,6 +10,7 @@ ExecStartPre=/usr/bin/aceproxy-config
 ExecStart=/storage/.config/aceproxy/acehttp.py
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStop=/bin/kill -TERM $MAINPID
+ExecStopPost=/usr/bin/aceproxy-stop
 TimeoutStopSec=5
 Restart=always
 RestartSec=2

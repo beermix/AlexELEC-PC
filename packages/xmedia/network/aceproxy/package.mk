@@ -25,6 +25,7 @@ make_target() {
 
 makeinstall_target() {
   DESTDIR=$INSTALL ./install
+    cp $PKG_DIR/config/* $INSTALL/usr/config/aceproxy
 
   mkdir -p $INSTALL/usr/bin
     cp $PKG_DIR/scripts/* $INSTALL/usr/bin

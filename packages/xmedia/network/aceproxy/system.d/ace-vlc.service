@@ -1,0 +1,14 @@
+[Unit]
+Description=VLC for AceProxy
+
+[Service]
+EnvironmentFile=-/storage/.config/aceproxy/ace-vlc.conf
+ExecStart=/usr/bin/cvlc -I telnet --telnet-pass admin $VLC_ARGS
+ExecStop=/bin/kill -TERM $MAINPID
+TimeoutStopSec=2
+Restart=always
+RestartSec=2
+StartLimitInterval=0
+
+[Install]
+WantedBy=kodi.target
