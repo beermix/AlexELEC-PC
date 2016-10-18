@@ -84,10 +84,10 @@ fi
 
 if [ "$ACEPROXY_VLC" == "1" ]; then
   VPID="110"
-  APID="120"
+  APID="120,122"
 else
   VPID="256"
-  APID="257"
+  APID="257,258"
 fi
 
   if [ -z "$OUTPUT_FILE" ]; then
