@@ -1,6 +1,6 @@
 diff -Naurp aceproxy-26e79d1/aceproxy/aceconfig.py aceproxy-26e79d1-patch/aceproxy/aceconfig.py
 --- aceproxy-26e79d1/aceproxy/aceconfig.py	2016-08-23 13:29:03.000000000 +0300
-+++ aceproxy-26e79d1-patch/aceproxy/aceconfig.py	2016-10-17 14:42:03.000000000 +0300
++++ aceproxy-26e79d1-patch/aceproxy/aceconfig.py	2016-10-18 13:26:35.000000000 +0300
 @@ -30,7 +30,7 @@ class AceConfig(acedefconfig.AceDefConfi
      aceport = 62062
      # Ace Stream age parameter (LT_13, 13_17, 18_24, 25_34, 35_44, 45_54,
@@ -10,6 +10,15 @@ diff -Naurp aceproxy-26e79d1/aceproxy/aceconfig.py aceproxy-26e79d1-patch/acepro
      # Ace Stream sex parameter (MALE or FEMALE)
      acesex = AceConst.SEX_MALE
      # Ace Stream Engine startup timeout
+@@ -96,7 +96,7 @@ class AceConfig(acedefconfig.AceDefConfi
+     vlcspawn = False
+     # VLC cmd line (use `--file-logging --logfile=filepath` to write log)
+     # Please use the full path to executable for Windows, for example - C:\\Program Files\\VideoLAN\\VLC\\vlc.exe
+-    vlccmd = "vlc -I telnet --clock-jitter -1 --network-caching -1 --sout-mux-caching 2000 --telnet-password admin --telnet-port 4212"
++    vlccmd = "cvlc -I telnet --clock-jitter -1 --network-caching -1 --sout-mux-caching 5000 --telnet-password admin --telnet-port 4212 --file-logging --logfile=/var/log/vlc-aceproxy.log --sout-ts-pid-video=110 --sout-ts-pid-audio=120"
+     # VLC spawn timeout
+     # Adjust this if you get error 'Cannot spawn VLC!'
+     vlcspawntimeout = 5
 @@ -170,7 +170,7 @@ class AceConfig(acedefconfig.AceDefConfi
      # In seconds.
      videodestroydelay = 0

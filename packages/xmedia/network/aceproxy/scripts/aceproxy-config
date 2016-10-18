@@ -25,9 +25,10 @@ rm -f $ACEPROXY_DIR/aceconfig.pyo
 # VLC support
 if [ "$ACEPROXY_VLC" == "1" ]; then
   sed -i -e "s/vlcuse =.*/vlcuse = True/" $ACEPROXY_DIR/aceconfig.py
-  systemctl start ace-vlc.service
+  sed -i -e "s/vlcspawn =.*/vlcspawn = True/" $ACEPROXY_DIR/aceconfig.py
 else
   sed -i -e "s/vlcuse =.*/vlcuse = False/" $ACEPROXY_DIR/aceconfig.py
+  sed -i -e "s/vlcspawn =.*/vlcspawn = False/" $ACEPROXY_DIR/aceconfig.py
 fi
 
 # Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
