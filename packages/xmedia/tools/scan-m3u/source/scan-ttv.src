@@ -15,6 +15,7 @@ TMP_FILE="$TMPDIR/iptv.tmp"
 TMP_INFO="$TMPDIR/info.tmp"
 TMP_CHNUM="$TMPDIR/chnum.conf"
 VDR_CHFILE="/storage/.config/vdr/channels.conf"
+SERVICE_DIR="/storage/.cache/services"
 
 mkdir -p $TMPDIR
 rm -rf $TMPDIR/*
