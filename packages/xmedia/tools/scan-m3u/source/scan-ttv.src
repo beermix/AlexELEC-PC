@@ -46,12 +46,12 @@ cat $TMP_FILE |
 
         if [ "$ECHO" != "no" ]; then
           [ "$RUB_NAME" != "$RUB_TEMP" ] && echo -e $RED":TTV $RUB_NAME"$ENDCOLOR >&2
-          echo "$CH_NAME;IPTV:$CN_NUM:S=0|P=0|F=CURL|U=$URL|A=0:I:0:256:257:0:0:1:1:1:0" >&2
+          echo "$CH_NAME;IPTV:$CN_NUM:S=0|P=0|F=CURL|U=$URL|A=0:I:0:$VPID:$APID:0:0:1:1:1:0" >&2
         fi
 
         if [ -e "$OUTPUT_FILE" ]; then
           [ "$RUB_NAME" != "$RUB_TEMP" ] && echo ":TTV $RUB_NAME"
-          echo "$CH_NAME;IPTV:$CN_NUM:S=0|P=0|F=CURL|U=$URL|A=0:I:0:256:257:0:0:1:1:1:0"
+          echo "$CH_NAME;IPTV:$CN_NUM:S=0|P=0|F=CURL|U=$URL|A=0:I:0:$VPID:$APID:0:0:1:1:1:0"
         fi
 
         RUB_TEMP=$RUB_NAME
@@ -77,6 +77,17 @@ else
 fi
 
 [ -z "$CN_NUM" ] && CN_NUM=1000
+
+[ -f $SERVICE_DIR/aceproxy.conf ] && . $SERVICE_DIR/aceproxy.conf
+[ -z $ACEPROXY_VLC ] && ACEPROXY_VLC="0"
+
+if [ "$ACEPROXY_VLC" == "1" ]; then
+  VPID="110"
+  APID="120"
+else
+  VPID="256"
+  APID="257"
+fi
 
   if [ -z "$OUTPUT_FILE" ]; then
       Channels
