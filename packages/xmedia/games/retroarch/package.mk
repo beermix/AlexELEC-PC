@@ -4,12 +4,12 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="083bc4e"
+PKG_VERSION="6f06b0a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
-PKG_URL="https://github.com/libretro/RetroArch/archive/$PKG_VERSION.tar.gz"
+PKG_URL=""
 PKG_SOURCE_DIR="RetroArch*"
 PKG_DEPENDS_TARGET="toolchain mesa vulkan-loader samba avahi nss-mdns ffmpeg alsa-lib freetype zlib retroarch-assets core-info retroarch-joypad-autoconfig common-shaders libretro-database buildbot-cores"
 PKG_PRIORITY="optional"
@@ -19,11 +19,12 @@ PKG_LONGDESC="RetroArch is the reference frontend for the libretro API. Popular 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-post_unpack() {
-  cd $ROOT/$PKG_BUILD
-    git clone --depth 1 https://github.com/KhronosGroup/SPIRV-Cross.git deps/SPIRV-Cross
-    git clone --depth 1 https://github.com/KhronosGroup/glslang.git deps/glslang/glslang
-  cd -
+unpack() {
+  git clone --recursive https://github.com/libretro/RetroArch $PKG_BUILD
+  cd $PKG_BUILD
+  git reset --hard $PKG_VERSION
+  rm -rf .git
+  cd $ROOT
 }
 
 TARGET_CONFIGURE_OPTS=""

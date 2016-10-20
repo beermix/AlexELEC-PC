@@ -1,0 +1,104 @@
+diff -Naurp retroarch-6f06b0a/command.c retroarch-6f06b0a-patch/command.c
+--- retroarch-6f06b0a/command.c	2016-10-19 12:36:11.000000000 +0300
++++ retroarch-6f06b0a-patch/command.c	2016-10-19 12:56:27.000000000 +0300
+@@ -16,6 +16,7 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <ctype.h>
++#include <fcntl.h>
+ 
+ #ifdef _WIN32
+ #include <direct.h>
+@@ -1798,9 +1799,6 @@ bool command_event(enum event_command cm
+          break;
+       case CMD_EVENT_LOAD_CORE:
+          command_event(CMD_EVENT_LOAD_CORE_PERSIST, NULL);
+-#ifndef HAVE_DYNAMIC
+-         command_event(CMD_EVENT_QUIT, NULL);
+-#endif
+          break;
+       case CMD_EVENT_LOAD_STATE:
+          /* Immutable - disallow savestate load when
+@@ -1909,6 +1907,9 @@ bool command_event(enum event_command cm
+          handle_quit_event();
+          break;
+       case CMD_EVENT_QUIT:
++         remove("/var/lock/start.retro");
++         creat("/var/lock/start.games", S_IRUSR|S_IROTH);
++         system("systemctl start emustation.service");
+ #ifdef HAVE_MENU
+          if (settings && settings->confirm_on_exit &&
+                 !menu_dialog_is_active() && !runloop_is_quit_confirm())
+@@ -2226,18 +2227,12 @@ bool command_event(enum event_command cm
+          }
+          break;
+       case CMD_EVENT_SHUTDOWN:
+-#if defined(__linux__) && !defined(ANDROID)
+          runloop_msg_queue_push("Shutting down...", 1, 180, true);
+-         command_event(CMD_EVENT_QUIT, NULL);
+-         system("shutdown -P now");
+-#endif
++         system("systemctl poweroff");
+          break;
+       case CMD_EVENT_REBOOT:
+-#if defined(__linux__) && !defined(ANDROID)
+          runloop_msg_queue_push("Rebooting...", 1, 180, true);
+-         command_event(CMD_EVENT_QUIT, NULL);
+-         system("shutdown -r now");
+-#endif
++         system("systemctl reboot");
+          break;
+       case CMD_EVENT_RESUME:
+          rarch_ctl(RARCH_CTL_MENU_RUNNING_FINISHED, NULL);
+@@ -2247,9 +2242,6 @@ bool command_event(enum event_command cm
+       case CMD_EVENT_RESTART_RETROARCH:
+          if (!frontend_driver_set_fork(FRONTEND_FORK_RESTART))
+             return false;
+-#ifndef HAVE_DYNAMIC
+-         command_event(CMD_EVENT_QUIT, NULL);
+-#endif
+          break;
+       case CMD_EVENT_MENU_SAVE_CURRENT_CONFIG:
+          command_event_save_current_config(OVERRIDE_NONE);
+diff -Naurp retroarch-6f06b0a/menu/menu_setting.c retroarch-6f06b0a-patch/menu/menu_setting.c
+--- retroarch-6f06b0a/menu/menu_setting.c	2016-10-19 12:36:32.000000000 +0300
++++ retroarch-6f06b0a-patch/menu/menu_setting.c	2016-10-19 12:59:23.000000000 +0300
+@@ -2302,20 +2302,6 @@ static bool setting_append_list(
+          menu_settings_list_current_add_enum_idx(list, list_info, MENU_ENUM_LABEL_HELP_LIST);
+          settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+ 
+-#if !defined(IOS)
+-         /* Apple rejects iOS apps that lets you forcibly quit an application. */
+-         CONFIG_ACTION(
+-               list, list_info,
+-               msg_hash_to_str(MENU_ENUM_LABEL_QUIT_RETROARCH),
+-               msg_hash_to_str(MENU_ENUM_LABEL_VALUE_QUIT_RETROARCH),
+-               &group_info,
+-               &subgroup_info,
+-               parent_group);
+-         menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_QUIT);
+-         menu_settings_list_current_add_enum_idx(list, list_info, MENU_ENUM_LABEL_QUIT_RETROARCH);
+-#endif
+-
+-#if defined(HAVE_LAKKA)
+          CONFIG_ACTION(
+                list, list_info,
+                msg_hash_to_str(MENU_ENUM_LABEL_SHUTDOWN),
+@@ -2335,7 +2321,16 @@ static bool setting_append_list(
+                parent_group);
+          menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_REBOOT);
+          menu_settings_list_current_add_enum_idx(list, list_info, MENU_ENUM_LABEL_REBOOT);
+-#endif
++
++         CONFIG_ACTION(
++               list, list_info,
++               msg_hash_to_str(MENU_ENUM_LABEL_QUIT_RETROARCH),
++               msg_hash_to_str(MENU_ENUM_LABEL_VALUE_QUIT_RETROARCH),
++               &group_info,
++               &subgroup_info,
++               parent_group);
++         menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_QUIT);
++         menu_settings_list_current_add_enum_idx(list, list_info, MENU_ENUM_LABEL_QUIT_RETROARCH);
+ 
+          CONFIG_ACTION(
+                list, list_info,

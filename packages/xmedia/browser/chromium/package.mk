@@ -23,6 +23,11 @@ pre_make_target() {
   strip_lto
   touch chrome/test/data/webui/i18n_process_css_test.html
   sed -i -e 's/@WIDEVINE_VERSION@/Pinkie Pie/' third_party/widevine/cdm/stub/widevine_cdm_version.h
+
+  # Native Client (NaCl)
+  python build/download_nacl_toolchains.py \
+      --packages nacl_x86_newlib,pnacl_newlib,pnacl_translator \
+      sync --extract
 }
 
 make_target() {
@@ -38,10 +43,10 @@ make_target() {
   _google_default_client_secret=3NN7qvE3D0TpB1HbNMYMBu_Z
 
   ## workaround for gcc-6
-  mv /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.org
-  mv /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19.org
-  cp -P $SYSROOT_PREFIX/usr/lib/libstdc++.so.6 /usr/lib/x86_64-linux-gnu
-  cp -P $SYSROOT_PREFIX/usr/lib/libstdc++.so.6.0.22 /usr/lib/x86_64-linux-gnu
+  mv -f /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.org || true
+  mv -f /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19.org || true
+  cp -fP $SYSROOT_PREFIX/usr/lib/libstdc++.so.6 /usr/lib/x86_64-linux-gnu
+  cp -fP $SYSROOT_PREFIX/usr/lib/libstdc++.so.6.0.22 /usr/lib/x86_64-linux-gnu
   ## workaround for gcc-6
 
   local _chromium_conf=(
@@ -92,8 +97,8 @@ make_target() {
     -Dsysroot=$SYSROOT_PREFIX
     -Ddisable_glibc=1
     -Denable_widevine=1
-    -Ddisable_nacl=1
-    -Ddisable_pnacl=1)
+    -Denable_nacl=1
+    -Denable_pnacl=1)
 
   ./build/linux/unbundle/replace_gyp_files.py "${_chromium_conf[@]}"
   ./build/gyp_chromium --depth=. "${_chromium_conf[@]}"
@@ -103,8 +108,8 @@ make_target() {
   ## workaround for gcc-6
   rm -f /usr/lib/x86_64-linux-gnu/libstdc++.so.6
   rm -f /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.22
-  mv /usr/lib/x86_64-linux-gnu/libstdc++.so.6.org /usr/lib/x86_64-linux-gnu/libstdc++.so.6
-  mv /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19.org /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19
+  mv -f /usr/lib/x86_64-linux-gnu/libstdc++.so.6.org /usr/lib/x86_64-linux-gnu/libstdc++.so.6 || true
+  mv -f /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19.org /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19 || true
   ## workaround for gcc-6
 }
 
@@ -113,6 +118,9 @@ makeinstall_target() {
     cp -P out/Release/chrome $INSTALL/usr/config/chromium/chromium.bin
     cp -P out/Release/chrome_sandbox $INSTALL/usr/config/chromium/chrome-sandbox
     cp -P out/Release/{*.pak,*.dat,*.bin,libwidevinecdmadapter.so} $INSTALL/usr/config/chromium
+    cp -P out/Release/nacl_helper{,_bootstrap} $INSTALL/usr/config/chromium
+    cp -P out/Release/nacl_irt_*.nexe $INSTALL/usr/config/chromium
+    cp -P out/Release/gen/content/content_resources.pak $INSTALL/usr/config/chromium
     cp -a out/Release/locales $INSTALL/usr/config/chromium
 
   $STRIP $INSTALL/usr/config/chromium/chromium.bin
